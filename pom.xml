@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.github.shalk</groupId>
+  <artifactId>grpc-plus</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <modules>
+    <module>server</module>
+    <module>client</module>
+    <module>common</module>
+  </modules>
+
+  <properties>
+    <maven.compiler.source>8</maven.compiler.source>
+    <maven.compiler.target>8</maven.compiler.target>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <spring-boot-dependencies.version>3.2.5</spring-boot-dependencies.version>
+    <protobufVersion>3.25.3</protobufVersion>
+    <grpcVersion>1.63.0</grpcVersion>
+    <guavaVersion>33.1.0-jre</guavaVersion>
+    <springBootVersion>3.2.5</springBootVersion>
+    <springCloudVersion>2023.0.0</springCloudVersion>
+    <springCloudAlibabaNacosVersion>2022.0.0.0</springCloudAlibabaNacosVersion>
+    <!--    grpcVersion = '1.63.0'-->
+
+    <!--    // https://github.com/google/guava/releases-->
+    <!--    guavaVersion = '33.1.0-jre'-->
+    <!--    // https://github.com/protocolbuffers/protobuf/releases-->
+    <!--    protobufVersion = '3.25.3'-->
+    <!--    protobufGradlePluginVersion = '0.9.4'-->
+
+    <!--    // https://github.com/spring-projects/spring-boot/releases-->
+    <!--    springBootVersion = '3.2.5'-->
+    <!--    // https://github.com/spring-cloud/spring-cloud-release/releases-->
+    <!--    springCloudVersion = '2023.0.0'-->
+    <!--    // https://github.com/alibaba/spring-cloud-alibaba/releases-->
+    <!--    springCloudAlibabaNacosVersion = '2022.0.0.0'-->
+  </properties>
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>io.grpc</groupId>
+        <artifactId>grpc-bom</artifactId>
+        <version>${grpcVersion}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.google.protobuf</groupId>
+        <artifactId>protobuf-bom</artifactId>
+        <version>${protobufVersion}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava-bom</artifactId>
+        <version>28.2-android</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-dependencies</artifactId>
+        <version>${springBootVersion}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework.cloud</groupId>
+        <artifactId>spring-cloud-dependencies</artifactId>
+        <version>${springCloudVersion}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.alibaba.cloud</groupId>
+        <artifactId>spring-cloud-alibaba-dependencies</artifactId>
+        <version>${springCloudAlibabaNacosVersion}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.github.shalk</groupId>
+        <artifactId>grpc-plus-common</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.github.shalk</groupId>
+        <artifactId>grpc-plus-common</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.github.shalk</groupId>
+        <artifactId>grpc-plus-common</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+  <dependencies>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-actuator</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.grpc</groupId>
+      <artifactId>grpc-stub</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.grpc</groupId>
+      <artifactId>grpc-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.grpc</groupId>
+      <artifactId>grpc-netty-shaded</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.grpc</groupId>
+      <artifactId>grpc-protobuf</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.grpc</groupId>
+      <artifactId>grpc-testing</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>1.18.24</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>com.diffplug.spotless</groupId>
+        <artifactId>spotless-maven-plugin</artifactId>
+        <version>2.28.0</version>
+        <configuration>
+          <!--
+          spotless {
+          java {
+          target('src/main/**/*.java', 'src/test/**/*.java')
+          targetExclude('**/SocketUtils.java')
+          licenseHeaderFile rootProject.file('extra/spotless/license.java')
+          removeUnusedImports()
+          importOrderFile rootProject.file('extra/eclipse/eclipse.importorder')
+          eclipse().configFile rootProject.file('extra/eclipse/eclipse-formatter.xml')
+          }
+          format('misc') {
+          target('**/*.gradle', '**/*.md', '**/*.yml')
+          targetExclude('**/build/**/*.*')
+          trimTrailingWhitespace()
+          endWithNewline()
+          }
+          }
+          -->
+          <java>
+            <excludes>
+              <exclude>**/SocketUtils.java</exclude>
+            </excludes>
+            <licenseHeader>
+              <file>${maven.multiModuleProjectDirectory}/extra/spotless/license.java</file>
+            </licenseHeader>
+            <removeUnusedImports />
+            <importOrder>
+              <!-- or a custom ordering -->
+              <file>${maven.multiModuleProjectDirectory}/extra/eclipse/eclipse.importorder</file>
+            </importOrder>
+            <eclipse>
+              <file>${maven.multiModuleProjectDirectory}/extra/eclipse/eclipse-formatter.xml</file>
+              <!-- optional -->
+            </eclipse>
+          </java>
+          <formats>
+            <format>
+              <includes>
+                <include>**/*.gradle</include>
+                <include>**/*.md</include>
+                <include>**/*.yml</include>
+              </includes>
+              <excludes>
+                <exclude>**/build/**/*.*</exclude>
+              </excludes>
+              <trimTrailingWhitespace />
+              <endWithNewline />
+            </format>
+          </formats>
+          <pom>
+            <includes>
+              <include>pom.xml</include>
+            </includes>
+            <sortPom>
+              <expandEmptyElements>false</expandEmptyElements>
+              <spaceBeforeCloseEmptyElement>true</spaceBeforeCloseEmptyElement>
+            </sortPom>
+          </pom>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.13.0</version>
+        <configuration>
+          <annotationProcessorPaths>
+            <annotationProcessorPath>
+              <groupId>org.springframework.boot</groupId>
+              <artifactId>spring-boot-autoconfigure-processor</artifactId>
+              <version>${spring-boot-dependencies.version}</version>
+            </annotationProcessorPath>
+            <annotationProcessorPath>
+              <groupId>org.springframework.boot</groupId>
+              <artifactId>spring-boot-configuration-processor</artifactId>
+              <version>${spring-boot-dependencies.version}</version>
+            </annotationProcessorPath>
+            <path>
+              <groupId>org.projectlombok</groupId>
+              <artifactId>lombok</artifactId>
+              <version>1.18.24</version>
+            </path>
+          </annotationProcessorPaths>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
