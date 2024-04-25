@@ -18,10 +18,9 @@ package net.devh.boot.grpc.client.stubfactory;
 
 import java.lang.reflect.Method;
 
-import org.springframework.beans.BeanInstantiationException;
-
 import io.grpc.Channel;
 import io.grpc.stub.AbstractStub;
+import lombok.SneakyThrows;
 
 /**
  * A factory for creating stubs provided by standard grpc Java library. This is an abstract super-type that can be
@@ -30,16 +29,13 @@ import io.grpc.stub.AbstractStub;
 public abstract class StandardJavaGrpcStubFactory implements StubFactory {
 
     @Override
+    @SneakyThrows
     public AbstractStub<?> createStub(final Class<? extends AbstractStub<?>> stubType, final Channel channel) {
-        try {
-            // Use the public static factory method
-            final String methodName = getFactoryMethodName();
-            final Class<?> enclosingClass = stubType.getEnclosingClass();
-            final Method factoryMethod = enclosingClass.getMethod(methodName, Channel.class);
-            return stubType.cast(factoryMethod.invoke(null, channel));
-        } catch (final Exception e) {
-            throw new BeanInstantiationException(stubType, "Failed to create gRPC client", e);
-        }
+        // Use the public static factory method
+        final String methodName = getFactoryMethodName();
+        final Class<?> enclosingClass = stubType.getEnclosingClass();
+        final Method factoryMethod = enclosingClass.getMethod(methodName, Channel.class);
+        return stubType.cast(factoryMethod.invoke(null, channel));
     }
 
     /**

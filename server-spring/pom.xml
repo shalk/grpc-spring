@@ -9,25 +9,11 @@
 
   </parent>
 
-  <artifactId>grpc-plus-client</artifactId>
+  <artifactId>grpc-plus-server-spring</artifactId>
 
   <properties />
 
   <dependencies>
-    <!-- https://mvnrepository.com/artifact/javax.inject/javax.inject -->
-    <dependency>
-      <groupId>javax.inject</groupId>
-      <artifactId>javax.inject</artifactId>
-      <version>1</version>
-    </dependency>
-    <dependency>
-      <groupId>io.netty</groupId>
-      <artifactId>netty-transport-native-epoll</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.google.code.gson</groupId>
-      <artifactId>gson</artifactId>
-    </dependency>
     <dependency>
       <groupId>com.github.shalk</groupId>
       <artifactId>grpc-plus-common</artifactId>
@@ -110,5 +96,15 @@
       <scope>provided</scope>
     </dependency>
   </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.2.5</version>
+      </plugin>
+    </plugins>
+  </build>
 
 </project>
