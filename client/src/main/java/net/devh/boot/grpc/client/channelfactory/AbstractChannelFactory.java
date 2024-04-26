@@ -44,10 +44,9 @@ import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
-import net.devh.boot.grpc.client.config.GrpcChannelProperties;
-import net.devh.boot.grpc.client.config.GrpcChannelProperties.Security;
-import net.devh.boot.grpc.client.config.GrpcChannelsProperties;
 import net.devh.boot.grpc.client.config.NegotiationType;
+import net.devh.boot.grpc.client.config.SimpleGrpcChannelProperties;
+import net.devh.boot.grpc.client.config.SimpleGrpcChannelsProperties;
 import net.devh.boot.grpc.client.interceptor.GlobalClientInterceptorRegistry;
 
 /**
@@ -63,7 +62,7 @@ import net.devh.boot.grpc.client.interceptor.GlobalClientInterceptorRegistry;
 @Slf4j
 public abstract class AbstractChannelFactory<T extends ManagedChannelBuilder<T>> implements GrpcChannelFactory {
 
-    private final GrpcChannelsProperties properties;
+    private final SimpleGrpcChannelsProperties properties;
     protected final GlobalClientInterceptorRegistry globalClientInterceptorRegistry;
     protected final List<GrpcChannelConfigurer> channelConfigurers;
     /**
@@ -82,7 +81,7 @@ public abstract class AbstractChannelFactory<T extends ManagedChannelBuilder<T>>
      * @param globalClientInterceptorRegistry The interceptor registry to use.
      * @param channelConfigurers The channel configurers to use. Can be empty.
      */
-    protected AbstractChannelFactory(final GrpcChannelsProperties properties,
+    protected AbstractChannelFactory(final SimpleGrpcChannelsProperties properties,
             final GlobalClientInterceptorRegistry globalClientInterceptorRegistry,
             final List<GrpcChannelConfigurer> channelConfigurers) {
         this.properties = requireNonNull(properties, "properties");
@@ -151,7 +150,7 @@ public abstract class AbstractChannelFactory<T extends ManagedChannelBuilder<T>>
      * @param name The client name to use.
      * @return The properties for the given client name.
      */
-    protected final GrpcChannelProperties getPropertiesFor(final String name) {
+    protected final SimpleGrpcChannelProperties getPropertiesFor(final String name) {
         return this.properties.getChannel(name);
     }
 
@@ -159,7 +158,7 @@ public abstract class AbstractChannelFactory<T extends ManagedChannelBuilder<T>>
      * Gets the default scheme that should be used for a client channel's target if no address is specified for a
      * client's channel properties.
      *
-     * @return The default scheme defined in {@link GrpcChannelsProperties}.
+     * @return The default scheme defined in {@link SimpleGrpcChannelsProperties}.
      */
     protected final String getDefaultScheme() {
         String defaultScheme = this.properties.getDefaultScheme();
@@ -194,7 +193,7 @@ public abstract class AbstractChannelFactory<T extends ManagedChannelBuilder<T>>
      * @param name The name of the client to configure.
      */
     protected void configureKeepAlive(final T builder, final String name) {
-        final GrpcChannelProperties properties = getPropertiesFor(name);
+        final SimpleGrpcChannelProperties properties = getPropertiesFor(name);
         if (properties.isEnableKeepAlive()) {
             builder.keepAliveTime(properties.getKeepAliveTime().toNanos(), TimeUnit.NANOSECONDS)
                     .keepAliveTimeout(properties.getKeepAliveTimeout().toNanos(), TimeUnit.NANOSECONDS)
@@ -209,7 +208,7 @@ public abstract class AbstractChannelFactory<T extends ManagedChannelBuilder<T>>
      * @param name The name of the client to configure.
      */
     protected void configureSecurity(final T builder, final String name) {
-        final GrpcChannelProperties properties = getPropertiesFor(name);
+        final SimpleGrpcChannelProperties properties = getPropertiesFor(name);
         final Security security = properties.getSecurity();
 
         if (properties.getNegotiationType() != NegotiationType.TLS // non-default
@@ -239,10 +238,10 @@ public abstract class AbstractChannelFactory<T extends ManagedChannelBuilder<T>>
      * @param name The name of the client to configure.
      */
     protected void configureLimits(final T builder, final String name) {
-        final GrpcChannelProperties properties = getPropertiesFor(name);
-        final DataSize maxInboundMessageSize = properties.getMaxInboundMessageSize();
+        final SimpleGrpcChannelProperties properties = getPropertiesFor(name);
+        final Integer maxInboundMessageSize = properties.getMaxInboundMessageSize();
         if (maxInboundMessageSize != null) {
-            builder.maxInboundMessageSize((int) maxInboundMessageSize.toBytes());
+            builder.maxInboundMessageSize((int) maxInboundMessageSize);
         }
         final DataSize maxInboundMetadataSize = properties.getMaxInboundMetadataSize();
         if (maxInboundMetadataSize != null) {
@@ -257,7 +256,7 @@ public abstract class AbstractChannelFactory<T extends ManagedChannelBuilder<T>>
      * @param name The name of the client to configure.
      */
     protected void configureUserAgent(final T builder, final String name) {
-        final GrpcChannelProperties properties = getPropertiesFor(name);
+        final SimpleGrpcChannelProperties properties = getPropertiesFor(name);
         final String userAgent = properties.getUserAgent();
         if (userAgent != null) {
             builder.userAgent(userAgent);

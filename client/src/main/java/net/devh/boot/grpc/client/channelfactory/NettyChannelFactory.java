@@ -19,6 +19,7 @@ package net.devh.boot.grpc.client.channelfactory;
 import static java.util.Objects.requireNonNull;
 import static net.devh.boot.grpc.common.util.GrpcUtils.DOMAIN_SOCKET_ADDRESS_SCHEME;
 
+import java.io.File;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
@@ -27,6 +28,7 @@ import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLException;
 import javax.net.ssl.TrustManagerFactory;
 
+import org.apache.commons.io.FileUtils;
 import org.springframework.core.io.Resource;
 
 import io.grpc.netty.GrpcSslContexts;
@@ -35,10 +37,9 @@ import io.netty.channel.epoll.EpollDomainSocketChannel;
 import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.unix.DomainSocketAddress;
 import io.netty.handler.ssl.SslContextBuilder;
-import net.devh.boot.grpc.client.config.GrpcChannelProperties;
-import net.devh.boot.grpc.client.config.GrpcChannelProperties.Security;
-import net.devh.boot.grpc.client.config.GrpcChannelsProperties;
 import net.devh.boot.grpc.client.config.NegotiationType;
+import net.devh.boot.grpc.client.config.SimpleGrpcChannelProperties;
+import net.devh.boot.grpc.client.config.SimpleGrpcChannelsProperties;
 import net.devh.boot.grpc.client.interceptor.GlobalClientInterceptorRegistry;
 import net.devh.boot.grpc.common.security.KeyStoreUtils;
 import net.devh.boot.grpc.common.util.GrpcUtils;
@@ -63,7 +64,7 @@ public class NettyChannelFactory extends AbstractChannelFactory<NettyChannelBuil
      * @param globalClientInterceptorRegistry The interceptor registry to use.
      * @param channelConfigurers The channel configurers to use. Can be empty.
      */
-    public NettyChannelFactory(final GrpcChannelsProperties properties,
+    public NettyChannelFactory(final SimpleGrpcChannelsProperties properties,
             final GlobalClientInterceptorRegistry globalClientInterceptorRegistry,
             final List<GrpcChannelConfigurer> channelConfigurers) {
         super(properties, globalClientInterceptorRegistry, channelConfigurers);
@@ -71,7 +72,7 @@ public class NettyChannelFactory extends AbstractChannelFactory<NettyChannelBuil
 
     @Override
     protected NettyChannelBuilder newChannelBuilder(final String name) {
-        final GrpcChannelProperties properties = getPropertiesFor(name);
+        final SimpleGrpcChannelProperties properties = getPropertiesFor(name);
         URI address = properties.getAddress();
         if (address == null) {
             String defaultScheme = getDefaultScheme();
@@ -95,13 +96,13 @@ public class NettyChannelFactory extends AbstractChannelFactory<NettyChannelBuil
     @Override
     // Keep this in sync with ShadedNettyChannelFactory#configureSecurity
     protected void configureSecurity(final NettyChannelBuilder builder, final String name) {
-        final GrpcChannelProperties properties = getPropertiesFor(name);
+        final SimpleGrpcChannelProperties properties = getPropertiesFor(name);
 
         final NegotiationType negotiationType = properties.getNegotiationType();
         builder.negotiationType(of(negotiationType));
 
         if (negotiationType == NegotiationType.TLS) {
-            final Security security = properties.getSecurity();
+            final SimpleGrpcChannelProperties.Security security = properties.getSecurity();
 
             final String authorityOverwrite = security.getAuthorityOverride();
             if (authorityOverwrite != null && !authorityOverwrite.isEmpty()) {
@@ -135,7 +136,7 @@ public class NettyChannelFactory extends AbstractChannelFactory<NettyChannelBuil
      * @param sslContextBuilder The ssl context builder to configure.
      */
     // Keep this in sync with ShadedNettyChannelFactory#configureProvidedClientCertificate
-    protected static void configureProvidedClientCertificate(final Security security,
+    protected static void configureProvidedClientCertificate(final SimpleGrpcChannelProperties.Security security,
             final SslContextBuilder sslContextBuilder) {
         if (security.isClientAuthEnabled()) {
             try {
@@ -172,14 +173,15 @@ public class NettyChannelFactory extends AbstractChannelFactory<NettyChannelBuil
      * @param sslContextBuilder The ssl context builder to configure.
      */
     // Keep this in sync with ShadedNettyChannelFactory#configureAcceptedServerCertificates
-    protected static void configureAcceptedServerCertificates(final Security security,
+    protected static void configureAcceptedServerCertificates(final SimpleGrpcChannelProperties.Security security,
             final SslContextBuilder sslContextBuilder) {
         try {
-            final Resource trustCertCollection = security.getTrustCertCollection();
-            final Resource trustStore = security.getTrustStore();
+            final File trustCertCollection = security.getTrustCertCollection();
+            final File trustStore = security.getTrustStore();
+
 
             if (trustCertCollection != null) {
-                try (InputStream trustCertCollectionStream = trustCertCollection.getInputStream()) {
+                try (InputStream trustCertCollectionStream = FileUtils.openInputStream(trustCertCollection)) {
                     sslContextBuilder.trustManager(trustCertCollectionStream);
                 }
 

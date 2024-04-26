@@ -16,14 +16,12 @@
 
 package net.devh.boot.grpc.client.interceptor;
 
-import static com.google.common.collect.Maps.transformValues;
 import static java.util.Objects.requireNonNull;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import org.springframework.context.ApplicationContext;
+import java.util.function.Supplier;
 
 import io.grpc.ClientInterceptor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,16 +34,16 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class AnnotationGlobalClientInterceptorConfigurer implements GlobalClientInterceptorConfigurer {
 
-    private final ApplicationContext applicationContext;
+
+    private Supplier<Map<String, ClientInterceptor>> supplier;
 
     /**
      * Creates a new AnnotationGlobalClientInterceptorConfigurer.
      *
-     * @param applicationContext The application context to fetch the {@link GrpcGlobalClientInterceptor} annotated
-     *        {@link ClientInterceptor} beans from.
      */
-    public AnnotationGlobalClientInterceptorConfigurer(final ApplicationContext applicationContext) {
-        this.applicationContext = requireNonNull(applicationContext, "applicationContext");
+    public AnnotationGlobalClientInterceptorConfigurer(
+            final Supplier<Map<String, ClientInterceptor>> applicationContext) {
+        this.supplier = requireNonNull(supplier, "supplier");
     }
 
     /**
@@ -55,8 +53,7 @@ public class AnnotationGlobalClientInterceptorConfigurer implements GlobalClient
      * @return A map containing the global interceptor beans.
      */
     protected Map<String, ClientInterceptor> getClientInterceptorBeans() {
-        return transformValues(this.applicationContext.getBeansWithAnnotation(GrpcGlobalClientInterceptor.class),
-                ClientInterceptor.class::cast);
+        return supplier.get();
     }
 
     @Override

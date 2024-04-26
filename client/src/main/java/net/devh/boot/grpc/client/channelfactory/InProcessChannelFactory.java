@@ -21,7 +21,7 @@ import java.util.List;
 
 import io.grpc.inprocess.InProcessChannelBuilder;
 import lombok.extern.slf4j.Slf4j;
-import net.devh.boot.grpc.client.config.GrpcChannelsProperties;
+import net.devh.boot.grpc.client.config.SimpleGrpcChannelsProperties;
 import net.devh.boot.grpc.client.interceptor.GlobalClientInterceptorRegistry;
 
 /**
@@ -42,7 +42,7 @@ public class InProcessChannelFactory extends AbstractChannelFactory<InProcessCha
      * @param properties The properties for the channels to create.
      * @param globalClientInterceptorRegistry The interceptor registry to use.
      */
-    public InProcessChannelFactory(final GrpcChannelsProperties properties,
+    public InProcessChannelFactory(final SimpleGrpcChannelsProperties properties,
             final GlobalClientInterceptorRegistry globalClientInterceptorRegistry) {
         this(properties, globalClientInterceptorRegistry, Collections.emptyList());
     }
@@ -54,7 +54,7 @@ public class InProcessChannelFactory extends AbstractChannelFactory<InProcessCha
      * @param globalClientInterceptorRegistry The interceptor registry to use.
      * @param channelConfigurers The channel configurers to use. Can be empty.
      */
-    public InProcessChannelFactory(final GrpcChannelsProperties properties,
+    public InProcessChannelFactory(final SimpleGrpcChannelsProperties properties,
             final GlobalClientInterceptorRegistry globalClientInterceptorRegistry,
             final List<GrpcChannelConfigurer> channelConfigurers) {
         super(properties, globalClientInterceptorRegistry, channelConfigurers);

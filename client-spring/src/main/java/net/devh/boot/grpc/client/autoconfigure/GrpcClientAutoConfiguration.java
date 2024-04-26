@@ -16,9 +16,17 @@
 
 package net.devh.boot.grpc.client.autoconfigure;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Supplier;
 
+import io.grpc.ClientInterceptor;
+import net.devh.boot.grpc.client.interceptor.GlobalClientInterceptorConfigurer;
+import net.devh.boot.grpc.client.interceptor.GrpcGlobalClientInterceptor;
+import net.devh.boot.grpc.common.util.InterceptorOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -51,6 +59,8 @@ import net.devh.boot.grpc.client.stubfactory.AsyncStubFactory;
 import net.devh.boot.grpc.client.stubfactory.BlockingStubFactory;
 import net.devh.boot.grpc.client.stubfactory.FutureStubFactory;
 import net.devh.boot.grpc.common.autoconfigure.GrpcCommonCodecAutoConfiguration;
+
+import static com.google.common.collect.Maps.transformValues;
 
 /**
  * The auto configuration used by Spring-Boot that contains all beans to create and inject grpc clients into beans.
@@ -98,14 +108,38 @@ public class GrpcClientAutoConfiguration {
     @ConditionalOnMissingBean
     @Bean
     GlobalClientInterceptorRegistry globalClientInterceptorRegistry(final ApplicationContext applicationContext) {
-        return new GlobalClientInterceptorRegistry(applicationContext);
+        Supplier<List<GlobalClientInterceptorConfigurer>> supplier = new Supplier<List<GlobalClientInterceptorConfigurer>>() {
+            @Override
+            public List<GlobalClientInterceptorConfigurer> get() {
+                List<GlobalClientInterceptorConfigurer> list = new ArrayList<>();
+                 list.addAll(applicationContext.getBeansOfType(GlobalClientInterceptorConfigurer.class).values());
+                 return list;
+            }
+        };
+        Supplier<Comparator<Object> supplier1 = new Supplier<>() {
+
+            @Override
+            public Comparator<Object> get() {
+                return InterceptorOrder.beanFactoryAwareOrderComparator(applicationContext, ClientInterceptor.class);
+            }
+        };
+
+        return new GlobalClientInterceptorRegistry(supplier,supplier1);
     }
 
     @Bean
     @Lazy
     AnnotationGlobalClientInterceptorConfigurer annotationGlobalClientInterceptorConfigurer(
             final ApplicationContext applicationContext) {
-        return new AnnotationGlobalClientInterceptorConfigurer(applicationContext);
+        Supplier<Map<String, ClientInterceptor>> supplier = new Supplier<>() {
+
+            @Override
+            public Map<String, ClientInterceptor> get() {
+                return transformValues(applicationContext.getBeansWithAnnotation(GrpcGlobalClientInterceptor.class),
+                    ClientInterceptor.class::cast);
+            }
+        };
+        return new AnnotationGlobalClientInterceptorConfigurer(supplier);
     }
 
     /**

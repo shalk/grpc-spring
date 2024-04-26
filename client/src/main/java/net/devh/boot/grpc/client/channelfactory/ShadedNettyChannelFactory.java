@@ -35,10 +35,9 @@ import io.grpc.netty.shaded.io.netty.channel.epoll.EpollDomainSocketChannel;
 import io.grpc.netty.shaded.io.netty.channel.epoll.EpollEventLoopGroup;
 import io.grpc.netty.shaded.io.netty.channel.unix.DomainSocketAddress;
 import io.grpc.netty.shaded.io.netty.handler.ssl.SslContextBuilder;
-import net.devh.boot.grpc.client.config.GrpcChannelProperties;
-import net.devh.boot.grpc.client.config.GrpcChannelProperties.Security;
-import net.devh.boot.grpc.client.config.GrpcChannelsProperties;
 import net.devh.boot.grpc.client.config.NegotiationType;
+import net.devh.boot.grpc.client.config.SimpleGrpcChannelProperties;
+import net.devh.boot.grpc.client.config.SimpleGrpcChannelsProperties;
 import net.devh.boot.grpc.client.interceptor.GlobalClientInterceptorRegistry;
 import net.devh.boot.grpc.common.security.KeyStoreUtils;
 import net.devh.boot.grpc.common.util.GrpcUtils;
@@ -62,7 +61,7 @@ public class ShadedNettyChannelFactory extends AbstractChannelFactory<NettyChann
      * @param globalClientInterceptorRegistry The interceptor registry to use.
      * @param channelConfigurers The channel configurers to use. Can be empty.
      */
-    public ShadedNettyChannelFactory(final GrpcChannelsProperties properties,
+    public ShadedNettyChannelFactory(final SimpleGrpcChannelsProperties properties,
             final GlobalClientInterceptorRegistry globalClientInterceptorRegistry,
             final List<GrpcChannelConfigurer> channelConfigurers) {
         super(properties, globalClientInterceptorRegistry, channelConfigurers);
@@ -70,7 +69,7 @@ public class ShadedNettyChannelFactory extends AbstractChannelFactory<NettyChann
 
     @Override
     protected NettyChannelBuilder newChannelBuilder(final String name) {
-        final GrpcChannelProperties properties = getPropertiesFor(name);
+        final SimpleGrpcChannelProperties properties = getPropertiesFor(name);
         URI address = properties.getAddress();
         if (address == null) {
             String defaultScheme = getDefaultScheme();
@@ -95,13 +94,13 @@ public class ShadedNettyChannelFactory extends AbstractChannelFactory<NettyChann
     @Override
     // Keep this in sync with NettyChannelFactory#configureSecurity
     protected void configureSecurity(final NettyChannelBuilder builder, final String name) {
-        final GrpcChannelProperties properties = getPropertiesFor(name);
+        final SimpleGrpcChannelProperties properties = getPropertiesFor(name);
 
         final NegotiationType negotiationType = properties.getNegotiationType();
         builder.negotiationType(of(negotiationType));
 
         if (negotiationType == NegotiationType.TLS) {
-            final Security security = properties.getSecurity();
+            final SimpleGrpcChannelProperties.Security security = properties.getSecurity();
 
             final String authorityOverwrite = security.getAuthorityOverride();
             if (authorityOverwrite != null && !authorityOverwrite.isEmpty()) {
@@ -135,7 +134,7 @@ public class ShadedNettyChannelFactory extends AbstractChannelFactory<NettyChann
      * @param sslContextBuilder The ssl context builder to configure.
      */
     // Keep this in sync with NettyChannelFactory#configureProvidedClientCertificate
-    protected static void configureProvidedClientCertificate(final Security security,
+    protected static void configureProvidedClientCertificate(final SimpleGrpcChannelProperties.Security security,
             final SslContextBuilder sslContextBuilder) {
         if (security.isClientAuthEnabled()) {
             try {
@@ -172,7 +171,7 @@ public class ShadedNettyChannelFactory extends AbstractChannelFactory<NettyChann
      * @param sslContextBuilder The ssl context builder to configure.
      */
     // Keep this in sync with NettyChannelFactory#configureAcceptedServerCertificates
-    protected static void configureAcceptedServerCertificates(final Security security,
+    protected static void configureAcceptedServerCertificates(final SimpleGrpcChannelProperties.Security security,
             final SslContextBuilder sslContextBuilder) {
         try {
             final Resource trustCertCollection = security.getTrustCertCollection();

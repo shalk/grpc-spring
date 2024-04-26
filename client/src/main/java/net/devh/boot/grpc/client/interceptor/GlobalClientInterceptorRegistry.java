@@ -17,12 +17,12 @@
 package net.devh.boot.grpc.client.interceptor;
 
 import static java.util.Objects.requireNonNull;
-import static net.devh.boot.grpc.common.util.InterceptorOrder.beanFactoryAwareOrderComparator;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.function.Supplier;
 
-import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 
 import com.google.common.collect.ImmutableList;
@@ -45,18 +45,19 @@ import io.grpc.ClientInterceptors;
  */
 public class GlobalClientInterceptorRegistry {
 
-    private final ApplicationContext applicationContext;
+    private final Supplier<List<GlobalClientInterceptorConfigurer>> supplier;
+    private final Supplier<Comparator<Object>> comparatorSupplier;
 
     private ImmutableList<ClientInterceptor> sortedClientInterceptors;
 
     /**
      * Creates a new GlobalClientInterceptorRegistry.
      *
-     * @param applicationContext The application context to fetch the {@link GlobalClientInterceptorConfigurer} beans
-     *        from.
      */
-    public GlobalClientInterceptorRegistry(final ApplicationContext applicationContext) {
-        this.applicationContext = requireNonNull(applicationContext, "applicationContext");
+    public GlobalClientInterceptorRegistry(Supplier<List<GlobalClientInterceptorConfigurer>> supplier,
+            Supplier<Comparator<Object>> comparatorSupplier) {
+        this.supplier = requireNonNull(supplier, "supplier");
+        this.comparatorSupplier = requireNonNull(comparatorSupplier, "comparatorSupplier");
     }
 
     /**
@@ -78,8 +79,7 @@ public class GlobalClientInterceptorRegistry {
      */
     protected List<ClientInterceptor> initClientInterceptors() {
         final List<ClientInterceptor> interceptors = new ArrayList<>();
-        for (final GlobalClientInterceptorConfigurer configurer : this.applicationContext
-                .getBeansOfType(GlobalClientInterceptorConfigurer.class).values()) {
+        for (final GlobalClientInterceptorConfigurer configurer : supplier.get()) {
             configurer.configureClientInterceptors(interceptors);
         }
         sortInterceptors(interceptors);
@@ -93,7 +93,7 @@ public class GlobalClientInterceptorRegistry {
      * @param interceptors The interceptors to sort.
      */
     public void sortInterceptors(final List<? extends ClientInterceptor> interceptors) {
-        interceptors.sort(beanFactoryAwareOrderComparator(this.applicationContext, ClientInterceptor.class));
+        interceptors.sort(comparatorSupplier.get());
     }
 
 }
