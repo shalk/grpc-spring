@@ -9,7 +9,10 @@
   <modules>
     <module>server-spring</module>
     <module>client-spring</module>
+    <module>common-spring</module>
     <module>common</module>
+    <module>client</module>
+    <module>server</module>
   </modules>
 
   <properties>
@@ -89,7 +92,17 @@
       </dependency>
       <dependency>
         <groupId>com.github.shalk</groupId>
-        <artifactId>grpc-plus-common</artifactId>
+        <artifactId>grpc-plus-client</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.github.shalk</groupId>
+        <artifactId>grpc-plus-server</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.github.shalk</groupId>
+        <artifactId>grpc-plus-common-spring</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -100,15 +113,6 @@
     </dependencies>
   </dependencyManagement>
   <dependencies>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-web</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-actuator</artifactId>
-    </dependency>
-
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
@@ -128,12 +132,6 @@
     <dependency>
       <groupId>io.grpc</groupId>
       <artifactId>grpc-protobuf</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-test</artifactId>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>io.grpc</groupId>

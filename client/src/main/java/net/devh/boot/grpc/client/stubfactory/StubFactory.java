@@ -16,7 +16,6 @@
 
 package net.devh.boot.grpc.client.stubfactory;
 
-import org.springframework.beans.BeanInstantiationException;
 
 import io.grpc.Channel;
 import io.grpc.stub.AbstractStub;
@@ -36,7 +35,6 @@ public interface StubFactory {
      * @param channel The channel used to create the stub.
      * @return The newly created stub.
      *
-     * @throws BeanInstantiationException If the stub couldn't be created.
      */
     AbstractStub<?> createStub(Class<? extends AbstractStub<?>> stubType, Channel channel);
 

@@ -21,10 +21,9 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 
-import org.springframework.beans.BeanInstantiationException;
-
 import io.grpc.Channel;
 import io.grpc.stub.AbstractStub;
+import lombok.SneakyThrows;
 
 /**
  * The StubFactory which tries to find a suitable factory method or constructor as a last resort. This factory will
@@ -40,32 +39,28 @@ public final class FallbackStubFactory implements StubFactory {
     }
 
     @Override
+    @SneakyThrows
     public AbstractStub<?> createStub(final Class<? extends AbstractStub<?>> stubType, final Channel channel) {
-        try {
-            // Search for public static *Grpc#new*Stub(Channel)
-            final Class<?> declaringClass = stubType.getDeclaringClass();
-            if (declaringClass != null) {
-                for (final Method method : declaringClass.getMethods()) {
-                    final String name = method.getName();
-                    final int modifiers = method.getModifiers();
-                    final Parameter[] parameters = method.getParameters();
-                    if (name.startsWith("new") && name.endsWith("Stub")
-                            && Modifier.isStatic(modifiers) && Modifier.isPublic(modifiers)
-                            && method.getReturnType().isAssignableFrom(stubType)
-                            && parameters.length == 1
-                            && Channel.class.equals(parameters[0].getType())) {
-                        return AbstractStub.class.cast(method.invoke(null, channel));
-                    }
+        // Search for public static *Grpc#new*Stub(Channel)
+        final Class<?> declaringClass = stubType.getDeclaringClass();
+        if (declaringClass != null) {
+            for (final Method method : declaringClass.getMethods()) {
+                final String name = method.getName();
+                final int modifiers = method.getModifiers();
+                final Parameter[] parameters = method.getParameters();
+                if (name.startsWith("new") && name.endsWith("Stub")
+                        && Modifier.isStatic(modifiers) && Modifier.isPublic(modifiers)
+                        && method.getReturnType().isAssignableFrom(stubType)
+                        && parameters.length == 1
+                        && Channel.class.equals(parameters[0].getType())) {
+                    return AbstractStub.class.cast(method.invoke(null, channel));
                 }
             }
-
-            // Search for a public constructor *Stub(Channel)
-            final Constructor<? extends AbstractStub<?>> constructor = stubType.getConstructor(Channel.class);
-            return constructor.newInstance(channel);
-
-        } catch (final Exception e) {
-            throw new BeanInstantiationException(stubType, "Failed to create gRPC client via FallbackStubFactory", e);
         }
+
+        // Search for a public constructor *Stub(Channel)
+        final Constructor<? extends AbstractStub<?>> constructor = stubType.getConstructor(Channel.class);
+        return constructor.newInstance(channel);
     }
 
 }

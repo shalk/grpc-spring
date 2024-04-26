@@ -36,7 +36,6 @@ import io.grpc.Metadata;
 import io.grpc.SecurityLevel;
 import io.grpc.Status;
 import io.grpc.stub.AbstractStub;
-import net.devh.boot.grpc.client.autoconfigure.GrpcClientSecurityAutoConfiguration;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import net.devh.boot.grpc.client.inject.StubTransformer;
 import net.devh.boot.grpc.common.security.SecurityConstants;
@@ -49,7 +48,7 @@ import net.devh.boot.grpc.common.security.SecurityConstants;
  * <b>Note:</b> If you have exactly one {@link CallCredentials} bean in your application context then it will be used
  * for all {@link AbstractStub} that are annotation with {@link GrpcClient}. If you have none or multiple
  * {@link CallCredentials} in the application context or use {@link Channel}s, then you have to configure the
- * credentials yourself (See {@link GrpcClientSecurityAutoConfiguration}).
+ * credentials yourself (See {@link net.devh.boot.grpc.client.autoconfigure.GrpcClientSecurityAutoConfiguration}).
  * </p>
  *
  * <p>
