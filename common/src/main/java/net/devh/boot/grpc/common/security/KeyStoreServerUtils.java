@@ -16,8 +16,10 @@
 
 package net.devh.boot.grpc.common.security;
 
-import static java.util.Objects.requireNonNull;
+import com.google.common.collect.ImmutableMap;
 
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.TrustManagerFactory;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -29,16 +31,12 @@ import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.util.Map;
 
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.TrustManagerFactory;
-
-
-import com.google.common.collect.ImmutableMap;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Helper class to create {@link KeyStore} related components.
  */
-public final class KeyStoreUtils {
+public final class KeyStoreServerUtils {
 
     /**
      * Automatically detects the keystore format.
@@ -178,6 +176,6 @@ public final class KeyStoreUtils {
     }
 
 
-    private KeyStoreUtils() {}
+    private KeyStoreServerUtils() {}
 
 }

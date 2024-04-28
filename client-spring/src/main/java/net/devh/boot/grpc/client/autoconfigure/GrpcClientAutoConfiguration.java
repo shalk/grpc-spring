@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 import io.grpc.ClientInterceptor;
+import net.devh.boot.grpc.client.config.ConfigConverter;
 import net.devh.boot.grpc.client.interceptor.GlobalClientInterceptorConfigurer;
 import net.devh.boot.grpc.client.interceptor.GrpcGlobalClientInterceptor;
 import net.devh.boot.grpc.common.util.InterceptorOrder;
@@ -151,7 +152,7 @@ public class GrpcClientAutoConfiguration {
      */
     @ConditionalOnMissingBean
     @Lazy
-    @Bean
+    @Bean(destroyMethod="destroy")
     NameResolverRegistration grpcNameResolverRegistration(
             @Autowired(required = false) final List<NameResolverProvider> nameResolverProviders) {
         final NameResolverRegistration nameResolverRegistration = new NameResolverRegistration(nameResolverProviders);
@@ -190,10 +191,10 @@ public class GrpcClientAutoConfiguration {
 
         log.info("Detected grpc-netty-shaded: Creating ShadedNettyChannelFactory + InProcessChannelFactory");
         final ShadedNettyChannelFactory channelFactory =
-                new ShadedNettyChannelFactory(properties, globalClientInterceptorRegistry, channelConfigurers);
+            new ShadedNettyChannelFactory(ConfigConverter.toSimples(properties), globalClientInterceptorRegistry, channelConfigurers);
         final InProcessChannelFactory inProcessChannelFactory =
-                new InProcessChannelFactory(properties, globalClientInterceptorRegistry, channelConfigurers);
-        return new InProcessOrAlternativeChannelFactory(properties, inProcessChannelFactory, channelFactory);
+                new InProcessChannelFactory(ConfigConverter.toSimples(properties), globalClientInterceptorRegistry, channelConfigurers);
+        return new InProcessOrAlternativeChannelFactory(ConfigConverter.toSimples(properties), inProcessChannelFactory, channelFactory);
     }
 
     // Then try the normal netty channel factory
@@ -208,10 +209,10 @@ public class GrpcClientAutoConfiguration {
 
         log.info("Detected grpc-netty: Creating NettyChannelFactory + InProcessChannelFactory");
         final NettyChannelFactory channelFactory =
-                new NettyChannelFactory(properties, globalClientInterceptorRegistry, channelConfigurers);
+                new NettyChannelFactory(ConfigConverter.toSimples(properties), globalClientInterceptorRegistry, channelConfigurers);
         final InProcessChannelFactory inProcessChannelFactory =
-                new InProcessChannelFactory(properties, globalClientInterceptorRegistry, channelConfigurers);
-        return new InProcessOrAlternativeChannelFactory(properties, inProcessChannelFactory, channelFactory);
+                new InProcessChannelFactory(ConfigConverter.toSimples(properties), globalClientInterceptorRegistry, channelConfigurers);
+        return new InProcessOrAlternativeChannelFactory(ConfigConverter.toSimples(properties), inProcessChannelFactory, channelFactory);
     }
 
     // Finally try the in process channel factory
@@ -224,7 +225,7 @@ public class GrpcClientAutoConfiguration {
             final List<GrpcChannelConfigurer> channelConfigurers) {
 
         log.warn("Could not find a GrpcChannelFactory on the classpath: Creating InProcessChannelFactory as fallback");
-        return new InProcessChannelFactory(properties, globalClientInterceptorRegistry, channelConfigurers);
+        return new InProcessChannelFactory(ConfigConverter.toSimples(properties), globalClientInterceptorRegistry, channelConfigurers);
     }
 
 }

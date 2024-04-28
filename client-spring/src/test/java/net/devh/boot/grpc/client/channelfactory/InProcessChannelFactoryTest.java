@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.io.IOException;
 import java.time.Duration;
 
+import net.devh.boot.grpc.client.config.ConfigConverter;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -105,7 +106,7 @@ class InProcessChannelFactoryTest {
     }
 
     private InProcessChannelFactory createFactory() {
-        return new InProcessChannelFactory(channelsProperties, registry);
+        return new InProcessChannelFactory(ConfigConverter.toSimples(channelsProperties), registry);
     }
 
 }

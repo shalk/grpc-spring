@@ -225,16 +225,16 @@
         <version>3.13.0</version>
         <configuration>
           <annotationProcessorPaths>
-            <annotationProcessorPath>
+            <path>
               <groupId>org.springframework.boot</groupId>
               <artifactId>spring-boot-autoconfigure-processor</artifactId>
               <version>${spring-boot-dependencies.version}</version>
-            </annotationProcessorPath>
-            <annotationProcessorPath>
+            </path>
+            <path>
               <groupId>org.springframework.boot</groupId>
               <artifactId>spring-boot-configuration-processor</artifactId>
               <version>${spring-boot-dependencies.version}</version>
-            </annotationProcessorPath>
+            </path>
             <path>
               <groupId>org.projectlombok</groupId>
               <artifactId>lombok</artifactId>

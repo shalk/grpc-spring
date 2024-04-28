@@ -28,6 +28,7 @@ import io.grpc.Channel;
 import io.grpc.ClientInterceptor;
 import io.grpc.ConnectivityState;
 import net.devh.boot.grpc.client.config.GrpcChannelsProperties;
+import net.devh.boot.grpc.client.config.SimpleGrpcChannelsProperties;
 
 /**
  * This channel factory is a switch between the {@link InProcessChannelFactory} and an alternative implementation. All
@@ -53,7 +54,7 @@ public class InProcessOrAlternativeChannelFactory implements GrpcChannelFactory 
 
     private static final String IN_PROCESS_SCHEME = "in-process";
 
-    private final GrpcChannelsProperties properties;
+    private final SimpleGrpcChannelsProperties properties;
     private final InProcessChannelFactory inProcessChannelFactory;
     private final GrpcChannelFactory alternativeChannelFactory;
 
@@ -64,7 +65,7 @@ public class InProcessOrAlternativeChannelFactory implements GrpcChannelFactory 
      * @param inProcessChannelFactory The in process channel factory implementation to use.
      * @param alternativeChannelFactory The alternative channel factory implementation to use.
      */
-    public InProcessOrAlternativeChannelFactory(final GrpcChannelsProperties properties,
+    public InProcessOrAlternativeChannelFactory(final SimpleGrpcChannelsProperties properties,
             final InProcessChannelFactory inProcessChannelFactory, final GrpcChannelFactory alternativeChannelFactory) {
         this.properties = requireNonNull(properties, "properties");
         this.inProcessChannelFactory = requireNonNull(inProcessChannelFactory, "inProcessChannelFactory");

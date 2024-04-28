@@ -32,8 +32,6 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.concurrent.GuardedBy;
 
-import org.springframework.util.unit.DataSize;
-
 import com.google.common.collect.Lists;
 
 import io.grpc.Channel;
@@ -209,7 +207,7 @@ public abstract class AbstractChannelFactory<T extends ManagedChannelBuilder<T>>
      */
     protected void configureSecurity(final T builder, final String name) {
         final SimpleGrpcChannelProperties properties = getPropertiesFor(name);
-        final Security security = properties.getSecurity();
+        final SimpleGrpcChannelProperties.Security security = properties.getSecurity();
 
         if (properties.getNegotiationType() != NegotiationType.TLS // non-default
                 || isNonNullAndNonBlank(security.getAuthorityOverride())
@@ -243,9 +241,9 @@ public abstract class AbstractChannelFactory<T extends ManagedChannelBuilder<T>>
         if (maxInboundMessageSize != null) {
             builder.maxInboundMessageSize((int) maxInboundMessageSize);
         }
-        final DataSize maxInboundMetadataSize = properties.getMaxInboundMetadataSize();
+        final Integer maxInboundMetadataSize = properties.getMaxInboundMetadataSize();
         if (maxInboundMetadataSize != null) {
-            builder.maxInboundMetadataSize((int) maxInboundMetadataSize.toBytes());
+            builder.maxInboundMetadataSize((int) maxInboundMetadataSize);
         }
     }
 
