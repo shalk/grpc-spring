@@ -18,8 +18,9 @@ package net.devh.boot.grpc.server.serverfactory;
 
 import static java.util.Objects.requireNonNull;
 import static net.devh.boot.grpc.common.util.GrpcUtils.DOMAIN_SOCKET_ADDRESS_PREFIX;
-import static net.devh.boot.grpc.server.config.GrpcServerProperties.ANY_IP_ADDRESS;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.util.List;
@@ -29,36 +30,36 @@ import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLException;
 import javax.net.ssl.TrustManagerFactory;
 
-import org.springframework.core.io.Resource;
 
 import com.google.common.net.InetAddresses;
 
-import io.grpc.netty.GrpcSslContexts;
-import io.grpc.netty.NettyServerBuilder;
-import io.netty.channel.epoll.EpollEventLoopGroup;
-import io.netty.channel.epoll.EpollServerDomainSocketChannel;
-import io.netty.channel.unix.DomainSocketAddress;
-import io.netty.handler.ssl.SslContextBuilder;
+import io.grpc.netty.shaded.io.grpc.netty.GrpcSslContexts;
+import io.grpc.netty.shaded.io.grpc.netty.NettyServerBuilder;
+import io.grpc.netty.shaded.io.netty.channel.epoll.EpollEventLoopGroup;
+import io.grpc.netty.shaded.io.netty.channel.epoll.EpollServerDomainSocketChannel;
+import io.grpc.netty.shaded.io.netty.channel.unix.DomainSocketAddress;
+import io.grpc.netty.shaded.io.netty.handler.ssl.SslContextBuilder;
 import net.devh.boot.grpc.common.security.KeyStoreUtils;
 import net.devh.boot.grpc.common.util.GrpcUtils;
 import net.devh.boot.grpc.server.config.ClientAuth;
-import net.devh.boot.grpc.server.config.GrpcServerProperties;
-import net.devh.boot.grpc.server.config.GrpcServerProperties.Security;
+import net.devh.boot.grpc.server.config.SimpleGrpcServerProperties;
+import net.devh.boot.grpc.server.config.SimpleGrpcServerProperties.Security;
 
 /**
- * Factory for netty based grpc servers.
+ * Factory for shaded netty based grpc servers.
  *
  * @author Michael (yidongnan@gmail.com)
  */
-public class NettyGrpcServerFactory extends AbstractGrpcServerFactory<NettyServerBuilder> {
+public class ShadedNettyGrpcServerFactory
+        extends AbstractGrpcServerFactory<io.grpc.netty.shaded.io.grpc.netty.NettyServerBuilder> {
 
     /**
-     * Creates a new netty server factory with the given properties.
+     * Creates a new shaded netty server factory with the given properties.
      *
      * @param properties The properties used to configure the server.
      * @param serverConfigurers The server configurers to use. Can be empty.
      */
-    public NettyGrpcServerFactory(final GrpcServerProperties properties,
+    public ShadedNettyGrpcServerFactory(final SimpleGrpcServerProperties properties,
             final List<GrpcServerConfigurer> serverConfigurers) {
         super(properties, serverConfigurers);
     }
@@ -73,7 +74,7 @@ public class NettyGrpcServerFactory extends AbstractGrpcServerFactory<NettyServe
                     .channelType(EpollServerDomainSocketChannel.class)
                     .bossEventLoopGroup(new EpollEventLoopGroup(1))
                     .workerEventLoopGroup(new EpollEventLoopGroup());
-        } else if (ANY_IP_ADDRESS.equals(address)) {
+        } else if (SimpleGrpcServerProperties.ANY_IP_ADDRESS.equals(address)) {
             return NettyServerBuilder.forPort(port);
         } else {
             return NettyServerBuilder.forAddress(new InetSocketAddress(InetAddresses.forString(address), port));
@@ -81,7 +82,7 @@ public class NettyGrpcServerFactory extends AbstractGrpcServerFactory<NettyServe
     }
 
     @Override
-    // Keep this in sync with ShadedNettyGrpcServerFactory#configureConnectionLimits
+    // Keep this in sync with NettyGrpcServerFactory#configureConnectionLimits
     protected void configureConnectionLimits(final NettyServerBuilder builder) {
         if (this.properties.getMaxConnectionIdle() != null) {
             builder.maxConnectionIdle(this.properties.getMaxConnectionIdle().toNanos(), TimeUnit.NANOSECONDS);
@@ -95,7 +96,7 @@ public class NettyGrpcServerFactory extends AbstractGrpcServerFactory<NettyServe
     }
 
     @Override
-    // Keep this in sync with ShadedNettyGrpcServerFactory#configureKeepAlive
+    // Keep this in sync with NettyGrpcServerFactory#configureKeepAlive
     protected void configureKeepAlive(final NettyServerBuilder builder) {
         if (this.properties.isEnableKeepAlive()) {
             builder.keepAliveTime(this.properties.getKeepAliveTime().toNanos(), TimeUnit.NANOSECONDS)
@@ -105,9 +106,8 @@ public class NettyGrpcServerFactory extends AbstractGrpcServerFactory<NettyServe
                 .permitKeepAliveWithoutCalls(this.properties.isPermitKeepAliveWithoutCalls());
     }
 
-
     @Override
-    // Keep this in sync with ShadedNettyGrpcServerFactory#configureSecurity
+    // Keep this in sync with NettyGrpcServerFactory#configureSecurity
     protected void configureSecurity(final NettyServerBuilder builder) {
         final Security security = this.properties.getSecurity();
         if (security.isEnabled()) {
@@ -140,18 +140,18 @@ public class NettyGrpcServerFactory extends AbstractGrpcServerFactory<NettyServe
      * @param security The security configuration to use.
      * @return The newly created SslContextBuilder.
      */
-    // Keep this in sync with ShadedNettyGrpcServerFactory#newServerSslContextBuilder
+    // Keep this in sync with NettyGrpcServerFactory#newServerSslContextBuilder
     protected static SslContextBuilder newServerSslContextBuilder(final Security security) {
         try {
-            final Resource privateKey = security.getPrivateKey();
-            final Resource keyStore = security.getKeyStore();
+            final File privateKey = security.getPrivateKey();
+            final File keyStore = security.getKeyStore();
 
             if (privateKey != null) {
-                final Resource certificateChain =
+                final File certificateChain =
                         requireNonNull(security.getCertificateChain(), "certificateChain");
                 final String privateKeyPassword = security.getPrivateKeyPassword();
-                try (InputStream certificateChainStream = certificateChain.getInputStream();
-                        InputStream privateKeyStream = privateKey.getInputStream()) {
+                try (InputStream certificateChainStream = new FileInputStream(certificateChain);
+                     InputStream privateKeyStream = new FileInputStream(privateKey)) {
                     return GrpcSslContexts.forServer(certificateChainStream, privateKeyStream, privateKeyPassword);
                 }
 
@@ -174,7 +174,7 @@ public class NettyGrpcServerFactory extends AbstractGrpcServerFactory<NettyServe
      * @param security The security configuration to use.
      * @param sslContextBuilder The ssl context builder to configure.
      */
-    // Keep this in sync with ShadedNettyGrpcServerFactory#configureAcceptedClientCertificates
+    // Keep this in sync with NettyGrpcServerFactory#configureAcceptedClientCertificates
     protected static void configureAcceptedClientCertificates(
             final Security security,
             final SslContextBuilder sslContextBuilder) {
@@ -183,11 +183,11 @@ public class NettyGrpcServerFactory extends AbstractGrpcServerFactory<NettyServe
             sslContextBuilder.clientAuth(of(security.getClientAuth()));
 
             try {
-                final Resource trustCertCollection = security.getTrustCertCollection();
-                final Resource trustStore = security.getTrustStore();
+                final File trustCertCollection = security.getTrustCertCollection();
+                final File trustStore = security.getTrustStore();
 
                 if (trustCertCollection != null) {
-                    try (InputStream trustCertCollectionStream = trustCertCollection.getInputStream()) {
+                    try (InputStream trustCertCollectionStream = new FileInputStream(trustCertCollection)) {
                         sslContextBuilder.trustManager(trustCertCollectionStream);
                     }
 
@@ -211,14 +211,15 @@ public class NettyGrpcServerFactory extends AbstractGrpcServerFactory<NettyServe
      * @param clientAuth The client auth option to convert.
      * @return The converted client auth option.
      */
-    protected static io.netty.handler.ssl.ClientAuth of(final ClientAuth clientAuth) {
+    // Keep this in sync with NettyGrpcServerFactory#configureAcceptedClientCertificates
+    protected static io.grpc.netty.shaded.io.netty.handler.ssl.ClientAuth of(final ClientAuth clientAuth) {
         switch (clientAuth) {
             case NONE:
-                return io.netty.handler.ssl.ClientAuth.NONE;
+                return io.grpc.netty.shaded.io.netty.handler.ssl.ClientAuth.NONE;
             case OPTIONAL:
-                return io.netty.handler.ssl.ClientAuth.OPTIONAL;
+                return io.grpc.netty.shaded.io.netty.handler.ssl.ClientAuth.OPTIONAL;
             case REQUIRE:
-                return io.netty.handler.ssl.ClientAuth.REQUIRE;
+                return io.grpc.netty.shaded.io.netty.handler.ssl.ClientAuth.REQUIRE;
             default:
                 throw new IllegalArgumentException("Unsupported ClientAuth: " + clientAuth);
         }

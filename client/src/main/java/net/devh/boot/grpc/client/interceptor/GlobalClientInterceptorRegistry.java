@@ -23,7 +23,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.function.Supplier;
 
-import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 
 import com.google.common.collect.ImmutableList;
 
@@ -88,7 +87,7 @@ public class GlobalClientInterceptorRegistry {
 
     /**
      * Sorts the given list of interceptors. Use this method if you want to sort custom interceptors. The default
-     * implementation will sort them by using then {@link AnnotationAwareOrderComparator}.
+     * implementation will sort them by using then {AnnotationAwareOrderComparator}.
      *
      * @param interceptors The interceptors to sort.
      */

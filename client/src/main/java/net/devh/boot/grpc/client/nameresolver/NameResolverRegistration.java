@@ -19,7 +19,6 @@ package net.devh.boot.grpc.client.nameresolver;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.factory.DisposableBean;
 
 import com.google.common.collect.ImmutableList;
 
@@ -33,7 +32,7 @@ import lombok.extern.slf4j.Slf4j;
  * @author Daniel Theuke (daniel.theuke@heuboe.de)
  */
 @Slf4j
-public class NameResolverRegistration implements DisposableBean {
+public class NameResolverRegistration   {
 
     private final List<NameResolverRegistry> registries = new ArrayList<>(1);
     private final List<NameResolverProvider> providers;
@@ -64,7 +63,6 @@ public class NameResolverRegistration implements DisposableBean {
         }
     }
 
-    @Override
     public void destroy() {
         for (NameResolverRegistry registry : this.registries) {
             for (NameResolverProvider provider : this.providers) {

@@ -27,7 +27,6 @@ import com.google.common.collect.ImmutableMap;
 import io.grpc.Channel;
 import io.grpc.ClientInterceptor;
 import io.grpc.ConnectivityState;
-import net.devh.boot.grpc.client.config.GrpcChannelsProperties;
 import net.devh.boot.grpc.client.config.SimpleGrpcChannelsProperties;
 
 /**

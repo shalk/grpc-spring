@@ -21,7 +21,7 @@ import java.net.URI;
 import io.grpc.NameResolver;
 import io.grpc.NameResolver.Args;
 import io.grpc.NameResolverProvider;
-import net.devh.boot.grpc.server.config.GrpcServerProperties;
+import net.devh.boot.grpc.server.config.SimpleGrpcServerProperties;
 
 /**
  * A name resolver factory that will create a {@link SelfNameResolverFactory} based on the target uri.
@@ -36,14 +36,14 @@ public class SelfNameResolverFactory extends NameResolverProvider {
      */
     public static final String SELF_SCHEME = "self";
 
-    private final GrpcServerProperties properties;
+    private final SimpleGrpcServerProperties properties;
 
     /**
      * Creates a new SelfNameResolverFactory that uses the given properties.
      *
      * @param properties The properties used to resolve this server's address.
      */
-    public SelfNameResolverFactory(final GrpcServerProperties properties) {
+    public SelfNameResolverFactory(final SimpleGrpcServerProperties properties) {
         this.properties = properties;
     }
 

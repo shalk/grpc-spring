@@ -109,23 +109,10 @@ public class GrpcClientAutoConfiguration {
     @ConditionalOnMissingBean
     @Bean
     GlobalClientInterceptorRegistry globalClientInterceptorRegistry(final ApplicationContext applicationContext) {
-        Supplier<List<GlobalClientInterceptorConfigurer>> supplier = new Supplier<List<GlobalClientInterceptorConfigurer>>() {
-            @Override
-            public List<GlobalClientInterceptorConfigurer> get() {
-                List<GlobalClientInterceptorConfigurer> list = new ArrayList<>();
-                 list.addAll(applicationContext.getBeansOfType(GlobalClientInterceptorConfigurer.class).values());
-                 return list;
-            }
-        };
-        Supplier<Comparator<Object> supplier1 = new Supplier<>() {
+        Supplier<List<GlobalClientInterceptorConfigurer>> supplier = () -> new ArrayList<>(applicationContext.getBeansOfType(GlobalClientInterceptorConfigurer.class).values());
+        Supplier<Comparator<Object>> comparatorSupplier = () -> InterceptorOrder.beanFactoryAwareOrderComparator(applicationContext, ClientInterceptor.class);
 
-            @Override
-            public Comparator<Object> get() {
-                return InterceptorOrder.beanFactoryAwareOrderComparator(applicationContext, ClientInterceptor.class);
-            }
-        };
-
-        return new GlobalClientInterceptorRegistry(supplier,supplier1);
+        return new GlobalClientInterceptorRegistry(supplier,comparatorSupplier);
     }
 
     @Bean

@@ -25,12 +25,7 @@ import lombok.Data;
 import net.devh.boot.grpc.common.security.KeyStoreUtils;
 import net.devh.boot.grpc.common.util.GrpcUtils;
 import net.devh.boot.grpc.common.util.SocketUtils;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.convert.DataSizeUnit;
-import org.springframework.boot.convert.DurationUnit;
-import org.springframework.core.io.Resource;
-import org.springframework.util.unit.DataSize;
-import org.springframework.util.unit.DataUnit;
+
 
 import java.io.File;
 import java.io.InputStream;
@@ -50,7 +45,6 @@ import static net.devh.boot.grpc.common.security.KeyStoreUtils.FORMAT_AUTODETECT
  * @since 5/17/16
  */
 @Data
-@ConfigurationProperties("grpc.server")
 @SuppressWarnings("javadoc")
 public class SimpleGrpcServerProperties {
 
@@ -106,7 +100,6 @@ public class SimpleGrpcServerProperties {
      * @param shutdownGracePeriod The time to wait for a graceful shutdown.
      * @return The time to wait for a graceful shutdown.
      */
-    @DurationUnit(ChronoUnit.SECONDS)
     private Duration shutdownGracePeriod = Duration.of(30, ChronoUnit.SECONDS);
 
     /**
@@ -127,7 +120,6 @@ public class SimpleGrpcServerProperties {
      * @param keepAliveTime The new default delay before sending keepAlives.
      * @return The default delay before sending keepAlives.
      */
-    @DurationUnit(ChronoUnit.SECONDS)
     private Duration keepAliveTime = Duration.of(2, ChronoUnit.HOURS);
 
     /**
@@ -140,7 +132,6 @@ public class SimpleGrpcServerProperties {
      * @param keepAliveTimeout Sets the default timeout for a keepAlives ping request.
      * @return The default timeout for a keepAlives ping request.
      */
-    @DurationUnit(ChronoUnit.SECONDS)
     private Duration keepAliveTimeout = Duration.of(20, ChronoUnit.SECONDS);
 
     /**
@@ -152,7 +143,6 @@ public class SimpleGrpcServerProperties {
      * @param permitKeepAliveTime The most aggressive keep-alive time clients are permitted to configure.
      * @return The most aggressive keep-alive time clients are permitted to configure.
      */
-    @DurationUnit(ChronoUnit.SECONDS)
     private Duration permitKeepAliveTime = Duration.of(5, ChronoUnit.MINUTES);
 
     /**
@@ -164,7 +154,6 @@ public class SimpleGrpcServerProperties {
      * @param permitKeepAliveWithoutCalls Whether to allow clients to send keep-alive requests without calls.
      * @return True, if clients are allowed to send keep-alive requests without calls. False otherwise.
      */
-    @DurationUnit(ChronoUnit.SECONDS)
     private boolean permitKeepAliveWithoutCalls = false;
 
     /**
@@ -175,7 +164,6 @@ public class SimpleGrpcServerProperties {
      * @param maxConnectionIdle The max connection idle time.
      * @return The max connection idle time.
      */
-    @DurationUnit(ChronoUnit.SECONDS)
     private Duration maxConnectionIdle = null;
 
     /**
@@ -186,7 +174,6 @@ public class SimpleGrpcServerProperties {
      * @param maxConnectionAge The max connection age.
      * @return The max connection age.
      */
-    @DurationUnit(ChronoUnit.SECONDS)
     private Duration maxConnectionAge = null;
 
     /**
@@ -198,7 +185,6 @@ public class SimpleGrpcServerProperties {
      * @param maxConnectionAgeGrace The max connection age grace time.
      * @return The max connection age grace time.
      */
-    @DurationUnit(ChronoUnit.SECONDS)
     private Duration maxConnectionAgeGrace = null;
 
     /**
@@ -207,8 +193,7 @@ public class SimpleGrpcServerProperties {
      *
      * @return The maximum message size allowed.
      */
-    @DataSizeUnit(DataUnit.BYTES)
-    private DataSize maxInboundMessageSize = null;
+    private Integer maxInboundMessageSize = null;
 
     /**
      * The maximum size of metadata allowed to be received. If not set ({@code null}) then
@@ -216,8 +201,7 @@ public class SimpleGrpcServerProperties {
      *
      * @return The maximum metadata size allowed.
      */
-    @DataSizeUnit(DataUnit.BYTES)
-    private DataSize maxInboundMetadataSize = null;
+    private Integer maxInboundMetadataSize = null;
 
     /**
      * Whether gRPC health service is enabled or not. Defaults to {@code true}.
@@ -267,7 +251,7 @@ public class SimpleGrpcServerProperties {
          * @param certificateChain The certificate chain resource.
          * @return The certificate chain resource or null.
          */
-        private Resource certificateChain = null;
+        private File certificateChain = null;
 
         /**
          * The resource containing the private key. Use in combination with {@link #certificateChain}. Cannot be used in
@@ -278,7 +262,7 @@ public class SimpleGrpcServerProperties {
          * @param privateKey The private key resource.
          * @return The private key resource or null.
          */
-        private Resource privateKey = null;
+        private File privateKey = null;
 
         /**
          * Password for the private key. Use is combination with {@link #privateKey}.
@@ -307,7 +291,7 @@ public class SimpleGrpcServerProperties {
          * @param keyStoreFormat The trust store format to use.
          * @return The trust store format to use.
          */
-        private String keyStoreFormat = FORMAT_AUTODETECT;
+        private String keyStoreFormat = KeyStoreUtils.FORMAT_AUTODETECT;
 
         /**
          * The resource containing the key store. Cannot be used in conjunction with {@link #privateKey}.
@@ -315,7 +299,7 @@ public class SimpleGrpcServerProperties {
          * @param keyStore The key store resource.
          * @return The key store resource or null.
          */
-        private Resource keyStore = null;
+        private File keyStore = null;
 
         /**
          * Password for the key store. Use is combination with {@link #keyStore}.
@@ -348,7 +332,7 @@ public class SimpleGrpcServerProperties {
          * @param trustCertCollection The trusted certificate collection resource.
          * @return The trusted certificate collection resource or null.
          */
-        private Resource trustCertCollection = null;
+        private File trustCertCollection = null;
 
         /**
          * The format of the {@link #trustStore}.
@@ -367,7 +351,7 @@ public class SimpleGrpcServerProperties {
          * @param trustStoreFormat The trust store format to use.
          * @return The trust store format to use.
          */
-        private String trustStoreFormat = FORMAT_AUTODETECT;
+        private String trustStoreFormat = KeyStoreUtils.FORMAT_AUTODETECT;
 
         /**
          * The resource containing the trust store. Cannot be used in conjunction with {@link #trustCertCollection}. If
@@ -376,7 +360,7 @@ public class SimpleGrpcServerProperties {
          * @param trustStore The trust store resource.
          * @return The trust store resource or null.
          */
-        private Resource trustStore = null;
+        private File trustStore = null;
 
         /**
          * Password for the trust store. Use is combination with {@link #trustStore}.
@@ -439,11 +423,11 @@ public class SimpleGrpcServerProperties {
      *
      * @see ServerBuilder#maxInboundMessageSize(int)
      */
-    public void setMaxInboundMessageSize(final DataSize maxInboundMessageSize) {
-        if (maxInboundMessageSize == null || maxInboundMessageSize.toBytes() >= 0) {
+    public void setMaxInboundMessageSize(final Integer maxInboundMessageSize) {
+        if (maxInboundMessageSize == null || maxInboundMessageSize >= 0) {
             this.maxInboundMessageSize = maxInboundMessageSize;
-        } else if (maxInboundMessageSize.toBytes() == -1) {
-            this.maxInboundMessageSize = DataSize.ofBytes(Integer.MAX_VALUE);
+        } else if (maxInboundMessageSize == -1) {
+            this.maxInboundMessageSize = Integer.MAX_VALUE;
         } else {
             throw new IllegalArgumentException("Unsupported maxInboundMessageSize: " + maxInboundMessageSize);
         }
@@ -459,11 +443,11 @@ public class SimpleGrpcServerProperties {
      *
      * @see ServerBuilder#maxInboundMetadataSize(int)
      */
-    public void setMaxInboundMetadataSize(final DataSize maxInboundMetadataSize) {
-        if (maxInboundMetadataSize == null || maxInboundMetadataSize.toBytes() >= 0) {
+    public void setMaxInboundMetadataSize(final Integer maxInboundMetadataSize) {
+        if (maxInboundMetadataSize == null || maxInboundMetadataSize >= 0) {
             this.maxInboundMetadataSize = maxInboundMetadataSize;
-        } else if (maxInboundMetadataSize.toBytes() == -1) {
-            this.maxInboundMetadataSize = DataSize.ofBytes(Integer.MAX_VALUE);
+        } else if (maxInboundMetadataSize == -1) {
+            this.maxInboundMetadataSize = Integer.MAX_VALUE;
         } else {
             throw new IllegalArgumentException("Unsupported maxInboundMetadataSize: " + maxInboundMetadataSize);
         }

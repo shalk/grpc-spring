@@ -19,6 +19,7 @@ package net.devh.boot.grpc.server.autoconfigure;
 import java.util.Collections;
 import java.util.List;
 
+import net.devh.boot.grpc.server.config.ServerPropertiesConverter;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -83,7 +84,7 @@ public class GrpcServerAutoConfiguration {
     @Bean
     @Lazy
     public SelfNameResolverFactory selfNameResolverFactory(final GrpcServerProperties properties) {
-        return new SelfNameResolverFactory(properties);
+        return new SelfNameResolverFactory(ServerPropertiesConverter.toSimple(properties));
     }
 
     @ConditionalOnMissingBean

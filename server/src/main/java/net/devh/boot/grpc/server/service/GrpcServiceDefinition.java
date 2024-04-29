@@ -23,7 +23,6 @@ import io.grpc.ServerServiceDefinition;
  *
  * @author Michael (yidongnan@gmail.com)
  * @since 5/17/16
- * @see GrpcServiceDiscoverer
  */
 public class GrpcServiceDefinition {
 

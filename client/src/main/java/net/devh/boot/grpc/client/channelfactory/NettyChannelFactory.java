@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import static net.devh.boot.grpc.common.util.GrpcUtils.DOMAIN_SOCKET_ADDRESS_SCHEME;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
@@ -29,7 +30,6 @@ import javax.net.ssl.SSLException;
 import javax.net.ssl.TrustManagerFactory;
 
 import org.apache.commons.io.FileUtils;
-import org.springframework.core.io.Resource;
 
 import io.grpc.netty.GrpcSslContexts;
 import io.grpc.netty.NettyChannelBuilder;
@@ -140,15 +140,15 @@ public class NettyChannelFactory extends AbstractChannelFactory<NettyChannelBuil
             final SslContextBuilder sslContextBuilder) {
         if (security.isClientAuthEnabled()) {
             try {
-                final Resource privateKey = security.getPrivateKey();
-                final Resource keyStore = security.getKeyStore();
+                final File privateKey = security.getPrivateKey();
+                final File keyStore = security.getKeyStore();
 
                 if (privateKey != null) {
-                    final Resource certificateChain =
+                    final File certificateChain =
                             requireNonNull(security.getCertificateChain(), "certificateChain");
                     final String privateKeyPassword = security.getPrivateKeyPassword();
-                    try (InputStream certificateChainStream = certificateChain.getInputStream();
-                            InputStream privateKeyStream = privateKey.getInputStream()) {
+                    try (InputStream certificateChainStream = new FileInputStream(certificateChain);
+                            InputStream privateKeyStream = new FileInputStream(privateKey)) {
                         sslContextBuilder.keyManager(certificateChainStream, privateKeyStream, privateKeyPassword);
                     }
 

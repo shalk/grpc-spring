@@ -22,7 +22,7 @@ import java.util.Collections;
 import java.util.List;
 
 import io.grpc.inprocess.InProcessServerBuilder;
-import net.devh.boot.grpc.server.config.GrpcServerProperties;
+import net.devh.boot.grpc.server.config.SimpleGrpcServerProperties;
 
 /**
  * Factory for in process grpc servers.
@@ -38,7 +38,7 @@ public class InProcessGrpcServerFactory extends AbstractGrpcServerFactory<InProc
      *
      * @param properties The properties used to configure the server.
      */
-    public InProcessGrpcServerFactory(final GrpcServerProperties properties) {
+    public InProcessGrpcServerFactory(final SimpleGrpcServerProperties properties) {
         this(properties.getInProcessName(), properties);
     }
 
@@ -48,7 +48,7 @@ public class InProcessGrpcServerFactory extends AbstractGrpcServerFactory<InProc
      * @param properties The properties used to configure the server.
      * @param serverConfigurers The server configurers to use. Can be empty.
      */
-    public InProcessGrpcServerFactory(final GrpcServerProperties properties,
+    public InProcessGrpcServerFactory(final SimpleGrpcServerProperties properties,
             final List<GrpcServerConfigurer> serverConfigurers) {
         this(properties.getInProcessName(), properties, serverConfigurers);
     }
@@ -59,7 +59,7 @@ public class InProcessGrpcServerFactory extends AbstractGrpcServerFactory<InProc
      * @param name The name of the in process server.
      * @param properties The properties used to configure the server.
      */
-    public InProcessGrpcServerFactory(final String name, final GrpcServerProperties properties) {
+    public InProcessGrpcServerFactory(final String name, final SimpleGrpcServerProperties properties) {
         this(name, properties, Collections.emptyList());
     }
 
@@ -70,7 +70,7 @@ public class InProcessGrpcServerFactory extends AbstractGrpcServerFactory<InProc
      * @param properties The properties used to configure the server.
      * @param serverConfigurers The server configurers to use. Can be empty.
      */
-    public InProcessGrpcServerFactory(final String name, final GrpcServerProperties properties,
+    public InProcessGrpcServerFactory(final String name, final SimpleGrpcServerProperties properties,
             final List<GrpcServerConfigurer> serverConfigurers) {
         super(properties, serverConfigurers);
         this.name = requireNonNull(name, "name");

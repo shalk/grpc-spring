@@ -32,6 +32,10 @@
       <artifactId>grpc-plus-common-spring</artifactId>
     </dependency>
     <dependency>
+      <groupId>com.github.shalk</groupId>
+      <artifactId>grpc-plus-server</artifactId>
+    </dependency>
+    <dependency>
       <groupId>io.grpc</groupId>
       <artifactId>grpc-stub</artifactId>
     </dependency>

@@ -19,6 +19,8 @@ package net.devh.boot.grpc.client.channelfactory;
 import static java.util.Objects.requireNonNull;
 import static net.devh.boot.grpc.common.util.GrpcUtils.DOMAIN_SOCKET_ADDRESS_SCHEME;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
@@ -27,7 +29,6 @@ import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLException;
 import javax.net.ssl.TrustManagerFactory;
 
-import org.springframework.core.io.Resource;
 
 import io.grpc.netty.shaded.io.grpc.netty.GrpcSslContexts;
 import io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder;
@@ -138,16 +139,16 @@ public class ShadedNettyChannelFactory extends AbstractChannelFactory<NettyChann
             final SslContextBuilder sslContextBuilder) {
         if (security.isClientAuthEnabled()) {
             try {
-                final Resource privateKey = security.getPrivateKey();
-                final Resource keyStore = security.getKeyStore();
+                final File privateKey = security.getPrivateKey();
+                final File keyStore = security.getKeyStore();
 
                 if (privateKey != null) {
-                    final Resource certificateChain =
+                    final File certificateChain =
                             requireNonNull(security.getCertificateChain(), "certificateChain");
                     final String privateKeyPassword = security.getPrivateKeyPassword();
-                    try (InputStream certificateChainStream = certificateChain.getInputStream();
-                            InputStream privateKeyStream = privateKey.getInputStream()) {
-                        sslContextBuilder.keyManager(certificateChainStream, privateKeyStream, privateKeyPassword);
+                    try (InputStream certificateChainStream = new FileInputStream(certificateChain);
+                        InputStream privateKeyStream = new FileInputStream(privateKey) ){
+                        sslContextBuilder.keyManager(certificateChainStream,privateKeyStream,privateKeyPassword);
                     }
 
                 } else if (keyStore != null) {
@@ -174,11 +175,11 @@ public class ShadedNettyChannelFactory extends AbstractChannelFactory<NettyChann
     protected static void configureAcceptedServerCertificates(final SimpleGrpcChannelProperties.Security security,
             final SslContextBuilder sslContextBuilder) {
         try {
-            final Resource trustCertCollection = security.getTrustCertCollection();
-            final Resource trustStore = security.getTrustStore();
+            final File trustCertCollection = security.getTrustCertCollection();
+            final File trustStore = security.getTrustStore();
 
             if (trustCertCollection != null) {
-                try (InputStream trustCertCollectionStream = trustCertCollection.getInputStream()) {
+                try (InputStream trustCertCollectionStream = new FileInputStream(trustCertCollection)) {
                     sslContextBuilder.trustManager(trustCertCollectionStream);
                 }
 

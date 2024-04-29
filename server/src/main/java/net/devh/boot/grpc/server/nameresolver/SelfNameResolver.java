@@ -36,7 +36,7 @@ import io.grpc.SynchronizationContext;
 import io.grpc.internal.GrpcUtil;
 import io.grpc.internal.SharedResourceHolder;
 import lombok.extern.slf4j.Slf4j;
-import net.devh.boot.grpc.server.config.GrpcServerProperties;
+import net.devh.boot.grpc.server.config.SimpleGrpcServerProperties;
 
 /**
  * A {@link NameResolver} that will always respond with the server's own address.
@@ -44,7 +44,7 @@ import net.devh.boot.grpc.server.config.GrpcServerProperties;
 @Slf4j
 public class SelfNameResolver extends NameResolver {
 
-    private final GrpcServerProperties properties;
+    private final SimpleGrpcServerProperties properties;
     private final SynchronizationContext syncContext;
     private final SharedResourceHolder.Resource<Executor> executorResource;
     private final boolean usingExecutorResource;
@@ -62,7 +62,7 @@ public class SelfNameResolver extends NameResolver {
      * @param properties The properties to read the server address from.
      * @param args The arguments for the resolver.
      */
-    public SelfNameResolver(final GrpcServerProperties properties, final Args args) {
+    public SelfNameResolver(final SimpleGrpcServerProperties properties, final Args args) {
         this(properties, args, GrpcUtil.SHARED_CHANNEL_EXECUTOR);
     }
 
@@ -73,8 +73,8 @@ public class SelfNameResolver extends NameResolver {
      * @param args The arguments for the resolver.
      * @param executorResource The shared executor resource for channels.
      */
-    public SelfNameResolver(final GrpcServerProperties properties, final Args args,
-            final SharedResourceHolder.Resource<Executor> executorResource) {
+    public SelfNameResolver(final SimpleGrpcServerProperties properties, final Args args,
+                            final SharedResourceHolder.Resource<Executor> executorResource) {
         this.properties = requireNonNull(properties, "properties");
         this.syncContext = requireNonNull(args.getSynchronizationContext(), "syncContext");
         this.executorResource = requireNonNull(executorResource, "executorResource");
@@ -128,7 +128,7 @@ public class SelfNameResolver extends NameResolver {
         final String address = this.properties.getAddress();
         final int port = this.properties.getPort();
         final SocketAddress target;
-        if (GrpcServerProperties.ANY_IP_ADDRESS.equals(address)) {
+        if (SimpleGrpcServerProperties.ANY_IP_ADDRESS.equals(address)) {
             target = new InetSocketAddress(port);
         } else {
             target = new InetSocketAddress(InetAddresses.forString(address), port);

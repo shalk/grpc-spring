@@ -22,14 +22,13 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.springframework.util.unit.DataSize;
 
 import com.google.common.collect.Lists;
 
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import lombok.extern.slf4j.Slf4j;
-import net.devh.boot.grpc.server.config.GrpcServerProperties;
+import net.devh.boot.grpc.server.config.SimpleGrpcServerProperties;
 import net.devh.boot.grpc.server.service.GrpcServiceDefinition;
 
 /**
@@ -45,7 +44,7 @@ public abstract class AbstractGrpcServerFactory<T extends ServerBuilder<T>> impl
 
     private final List<GrpcServiceDefinition> serviceList = Lists.newLinkedList();
 
-    protected final GrpcServerProperties properties;
+    protected final SimpleGrpcServerProperties properties;
     protected final List<GrpcServerConfigurer> serverConfigurers;
 
     /**
@@ -54,7 +53,7 @@ public abstract class AbstractGrpcServerFactory<T extends ServerBuilder<T>> impl
      * @param properties The properties used to configure the server.
      * @param serverConfigurers The server configurers to use. Can be empty.
      */
-    protected AbstractGrpcServerFactory(final GrpcServerProperties properties,
+    protected AbstractGrpcServerFactory(final SimpleGrpcServerProperties properties,
             final List<GrpcServerConfigurer> serverConfigurers) {
         this.properties = requireNonNull(properties, "properties");
         this.serverConfigurers = requireNonNull(serverConfigurers, "serverConfigurers");
@@ -158,13 +157,13 @@ public abstract class AbstractGrpcServerFactory<T extends ServerBuilder<T>> impl
      * @param builder The server builder to configure.
      */
     protected void configureLimits(final T builder) {
-        final DataSize maxInboundMessageSize = this.properties.getMaxInboundMessageSize();
+        final Integer maxInboundMessageSize = this.properties.getMaxInboundMessageSize();
         if (maxInboundMessageSize != null) {
-            builder.maxInboundMessageSize((int) maxInboundMessageSize.toBytes());
+            builder.maxInboundMessageSize((int) maxInboundMessageSize);
         }
-        final DataSize maxInboundMetadataSize = this.properties.getMaxInboundMetadataSize();
+        final Integer maxInboundMetadataSize = this.properties.getMaxInboundMetadataSize();
         if (maxInboundMetadataSize != null) {
-            builder.maxInboundMetadataSize((int) maxInboundMetadataSize.toBytes());
+            builder.maxInboundMetadataSize((int) maxInboundMetadataSize);
         }
     }
 
