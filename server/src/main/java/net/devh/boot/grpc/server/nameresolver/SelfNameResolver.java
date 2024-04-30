@@ -74,7 +74,7 @@ public class SelfNameResolver extends NameResolver {
      * @param executorResource The shared executor resource for channels.
      */
     public SelfNameResolver(final SimpleGrpcServerProperties properties, final Args args,
-                            final SharedResourceHolder.Resource<Executor> executorResource) {
+            final SharedResourceHolder.Resource<Executor> executorResource) {
         this.properties = requireNonNull(properties, "properties");
         this.syncContext = requireNonNull(args.getSynchronizationContext(), "syncContext");
         this.executorResource = requireNonNull(executorResource, "executorResource");

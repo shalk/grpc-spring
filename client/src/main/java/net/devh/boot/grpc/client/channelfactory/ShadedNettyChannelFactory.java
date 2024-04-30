@@ -29,7 +29,6 @@ import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLException;
 import javax.net.ssl.TrustManagerFactory;
 
-
 import io.grpc.netty.shaded.io.grpc.netty.GrpcSslContexts;
 import io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder;
 import io.grpc.netty.shaded.io.netty.channel.epoll.EpollDomainSocketChannel;
@@ -147,8 +146,8 @@ public class ShadedNettyChannelFactory extends AbstractChannelFactory<NettyChann
                             requireNonNull(security.getCertificateChain(), "certificateChain");
                     final String privateKeyPassword = security.getPrivateKeyPassword();
                     try (InputStream certificateChainStream = new FileInputStream(certificateChain);
-                        InputStream privateKeyStream = new FileInputStream(privateKey) ){
-                        sslContextBuilder.keyManager(certificateChainStream,privateKeyStream,privateKeyPassword);
+                            InputStream privateKeyStream = new FileInputStream(privateKey)) {
+                        sslContextBuilder.keyManager(certificateChainStream, privateKeyStream, privateKeyPassword);
                     }
 
                 } else if (keyStore != null) {

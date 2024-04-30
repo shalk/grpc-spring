@@ -32,7 +32,6 @@ import java.util.Map;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.TrustManagerFactory;
 
-
 import com.google.common.collect.ImmutableMap;
 
 /**

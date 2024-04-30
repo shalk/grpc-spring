@@ -30,7 +30,6 @@ import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLException;
 import javax.net.ssl.TrustManagerFactory;
 
-
 import com.google.common.net.InetAddresses;
 
 import io.grpc.netty.shaded.io.grpc.netty.GrpcSslContexts;
@@ -151,7 +150,7 @@ public class ShadedNettyGrpcServerFactory
                         requireNonNull(security.getCertificateChain(), "certificateChain");
                 final String privateKeyPassword = security.getPrivateKeyPassword();
                 try (InputStream certificateChainStream = new FileInputStream(certificateChain);
-                     InputStream privateKeyStream = new FileInputStream(privateKey)) {
+                        InputStream privateKeyStream = new FileInputStream(privateKey)) {
                     return GrpcSslContexts.forServer(certificateChainStream, privateKeyStream, privateKeyPassword);
                 }
 

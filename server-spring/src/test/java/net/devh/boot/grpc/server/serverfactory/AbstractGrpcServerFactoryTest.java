@@ -20,7 +20,6 @@ import static java.util.Collections.emptyList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import net.devh.boot.grpc.server.config.ServerPropertiesConverter;
 import org.junit.jupiter.api.Test;
 
 import io.grpc.ServerBuilder;
@@ -28,6 +27,7 @@ import io.grpc.netty.NettyServerBuilder;
 import io.grpc.protobuf.services.ProtoReflectionService;
 import io.grpc.reflection.v1alpha.ServerReflectionGrpc;
 import net.devh.boot.grpc.server.config.GrpcServerProperties;
+import net.devh.boot.grpc.server.config.ServerPropertiesConverter;
 import net.devh.boot.grpc.server.service.GrpcServiceDefinition;
 
 /**
@@ -43,7 +43,8 @@ class AbstractGrpcServerFactoryTest {
         final GrpcServerProperties properties = new GrpcServerProperties();
         properties.setReflectionServiceEnabled(false);
 
-        final NettyGrpcServerFactory serverFactory = new NettyGrpcServerFactory(ServerPropertiesConverter.toSimple(properties), emptyList());
+        final NettyGrpcServerFactory serverFactory =
+                new NettyGrpcServerFactory(ServerPropertiesConverter.toSimple(properties), emptyList());
 
         serverFactory.addService(new GrpcServiceDefinition("test1", ProtoReflectionService.class,
                 ProtoReflectionService.newInstance().bindService()));

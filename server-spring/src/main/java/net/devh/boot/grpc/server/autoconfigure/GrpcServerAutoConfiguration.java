@@ -19,7 +19,6 @@ package net.devh.boot.grpc.server.autoconfigure;
 import java.util.Collections;
 import java.util.List;
 
-import net.devh.boot.grpc.server.config.ServerPropertiesConverter;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -36,6 +35,7 @@ import io.grpc.DecompressorRegistry;
 import io.grpc.Server;
 import net.devh.boot.grpc.common.autoconfigure.GrpcCommonCodecAutoConfiguration;
 import net.devh.boot.grpc.server.config.GrpcServerProperties;
+import net.devh.boot.grpc.server.config.ServerPropertiesConverter;
 import net.devh.boot.grpc.server.interceptor.AnnotationGlobalServerInterceptorConfigurer;
 import net.devh.boot.grpc.server.interceptor.GlobalServerInterceptorRegistry;
 import net.devh.boot.grpc.server.nameresolver.SelfNameResolverFactory;

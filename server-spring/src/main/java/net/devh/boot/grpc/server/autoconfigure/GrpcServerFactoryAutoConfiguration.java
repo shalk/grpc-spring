@@ -18,7 +18,6 @@ package net.devh.boot.grpc.server.autoconfigure;
 
 import java.util.List;
 
-import net.devh.boot.grpc.server.config.ServerPropertiesConverter;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -32,6 +31,7 @@ import org.springframework.context.annotation.Configuration;
 import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.server.condition.ConditionalOnInterprocessServer;
 import net.devh.boot.grpc.server.config.GrpcServerProperties;
+import net.devh.boot.grpc.server.config.ServerPropertiesConverter;
 import net.devh.boot.grpc.server.serverfactory.GrpcServerConfigurer;
 import net.devh.boot.grpc.server.serverfactory.GrpcServerFactory;
 import net.devh.boot.grpc.server.serverfactory.GrpcServerLifecycle;
@@ -72,7 +72,8 @@ public class GrpcServerFactoryAutoConfiguration {
             final List<GrpcServerConfigurer> serverConfigurers) {
 
         log.info("Detected grpc-netty-shaded: Creating ShadedNettyGrpcServerFactory");
-        final ShadedNettyGrpcServerFactory factory = new ShadedNettyGrpcServerFactory(ServerPropertiesConverter.toSimple(properties), serverConfigurers);
+        final ShadedNettyGrpcServerFactory factory =
+                new ShadedNettyGrpcServerFactory(ServerPropertiesConverter.toSimple(properties), serverConfigurers);
         for (final GrpcServiceDefinition service : serviceDiscoverer.findGrpcServices()) {
             factory.addService(service);
         }
@@ -116,7 +117,8 @@ public class GrpcServerFactoryAutoConfiguration {
             final List<GrpcServerConfigurer> serverConfigurers) {
 
         log.info("Detected grpc-netty: Creating NettyGrpcServerFactory");
-        final NettyGrpcServerFactory factory = new NettyGrpcServerFactory(ServerPropertiesConverter.toSimple(properties), serverConfigurers);
+        final NettyGrpcServerFactory factory =
+                new NettyGrpcServerFactory(ServerPropertiesConverter.toSimple(properties), serverConfigurers);
         for (final GrpcServiceDefinition service : serviceDiscoverer.findGrpcServices()) {
             factory.addService(service);
         }
@@ -156,7 +158,8 @@ public class GrpcServerFactoryAutoConfiguration {
             final List<GrpcServerConfigurer> serverConfigurers) {
 
         log.info("'grpc.server.in-process-name' is set: Creating InProcessGrpcServerFactory");
-        final InProcessGrpcServerFactory factory = new InProcessGrpcServerFactory(ServerPropertiesConverter.toSimple(properties), serverConfigurers);
+        final InProcessGrpcServerFactory factory =
+                new InProcessGrpcServerFactory(ServerPropertiesConverter.toSimple(properties), serverConfigurers);
         for (final GrpcServiceDefinition service : serviceDiscoverer.findGrpcServices()) {
             factory.addService(service);
         }

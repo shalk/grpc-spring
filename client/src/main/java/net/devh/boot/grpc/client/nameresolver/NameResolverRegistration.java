@@ -19,7 +19,6 @@ package net.devh.boot.grpc.client.nameresolver;
 import java.util.ArrayList;
 import java.util.List;
 
-
 import com.google.common.collect.ImmutableList;
 
 import io.grpc.NameResolverProvider;
@@ -32,7 +31,7 @@ import lombok.extern.slf4j.Slf4j;
  * @author Daniel Theuke (daniel.theuke@heuboe.de)
  */
 @Slf4j
-public class NameResolverRegistration   {
+public class NameResolverRegistration {
 
     private final List<NameResolverRegistry> registries = new ArrayList<>(1);
     private final List<NameResolverProvider> providers;

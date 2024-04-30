@@ -30,7 +30,6 @@ import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLException;
 import javax.net.ssl.TrustManagerFactory;
 
-
 import com.google.common.net.InetAddresses;
 
 import io.grpc.netty.GrpcSslContexts;

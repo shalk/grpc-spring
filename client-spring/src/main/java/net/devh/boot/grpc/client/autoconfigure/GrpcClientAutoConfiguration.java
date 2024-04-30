@@ -16,6 +16,8 @@
 
 package net.devh.boot.grpc.client.autoconfigure;
 
+import static com.google.common.collect.Maps.transformValues;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -23,11 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
-import io.grpc.ClientInterceptor;
-import net.devh.boot.grpc.client.config.ConfigConverter;
-import net.devh.boot.grpc.client.interceptor.GlobalClientInterceptorConfigurer;
-import net.devh.boot.grpc.client.interceptor.GrpcGlobalClientInterceptor;
-import net.devh.boot.grpc.common.util.InterceptorOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -39,6 +36,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 
+import io.grpc.ClientInterceptor;
 import io.grpc.CompressorRegistry;
 import io.grpc.DecompressorRegistry;
 import io.grpc.NameResolverProvider;
@@ -50,18 +48,20 @@ import net.devh.boot.grpc.client.channelfactory.InProcessChannelFactory;
 import net.devh.boot.grpc.client.channelfactory.InProcessOrAlternativeChannelFactory;
 import net.devh.boot.grpc.client.channelfactory.NettyChannelFactory;
 import net.devh.boot.grpc.client.channelfactory.ShadedNettyChannelFactory;
+import net.devh.boot.grpc.client.config.ConfigConverter;
 import net.devh.boot.grpc.client.config.GrpcChannelsProperties;
 import net.devh.boot.grpc.client.inject.GrpcClientBeanPostProcessor;
 import net.devh.boot.grpc.client.inject.GrpcClientConstructorInjectionBeanFactoryPostProcessor;
 import net.devh.boot.grpc.client.interceptor.AnnotationGlobalClientInterceptorConfigurer;
+import net.devh.boot.grpc.client.interceptor.GlobalClientInterceptorConfigurer;
 import net.devh.boot.grpc.client.interceptor.GlobalClientInterceptorRegistry;
+import net.devh.boot.grpc.client.interceptor.GrpcGlobalClientInterceptor;
 import net.devh.boot.grpc.client.nameresolver.NameResolverRegistration;
 import net.devh.boot.grpc.client.stubfactory.AsyncStubFactory;
 import net.devh.boot.grpc.client.stubfactory.BlockingStubFactory;
 import net.devh.boot.grpc.client.stubfactory.FutureStubFactory;
 import net.devh.boot.grpc.common.autoconfigure.GrpcCommonCodecAutoConfiguration;
-
-import static com.google.common.collect.Maps.transformValues;
+import net.devh.boot.grpc.common.util.InterceptorOrder;
 
 /**
  * The auto configuration used by Spring-Boot that contains all beans to create and inject grpc clients into beans.
@@ -109,10 +109,12 @@ public class GrpcClientAutoConfiguration {
     @ConditionalOnMissingBean
     @Bean
     GlobalClientInterceptorRegistry globalClientInterceptorRegistry(final ApplicationContext applicationContext) {
-        Supplier<List<GlobalClientInterceptorConfigurer>> supplier = () -> new ArrayList<>(applicationContext.getBeansOfType(GlobalClientInterceptorConfigurer.class).values());
-        Supplier<Comparator<Object>> comparatorSupplier = () -> InterceptorOrder.beanFactoryAwareOrderComparator(applicationContext, ClientInterceptor.class);
+        Supplier<List<GlobalClientInterceptorConfigurer>> supplier = () -> new ArrayList<>(
+                applicationContext.getBeansOfType(GlobalClientInterceptorConfigurer.class).values());
+        Supplier<Comparator<Object>> comparatorSupplier =
+                () -> InterceptorOrder.beanFactoryAwareOrderComparator(applicationContext, ClientInterceptor.class);
 
-        return new GlobalClientInterceptorRegistry(supplier,comparatorSupplier);
+        return new GlobalClientInterceptorRegistry(supplier, comparatorSupplier);
     }
 
     @Bean
@@ -124,7 +126,7 @@ public class GrpcClientAutoConfiguration {
             @Override
             public Map<String, ClientInterceptor> get() {
                 return transformValues(applicationContext.getBeansWithAnnotation(GrpcGlobalClientInterceptor.class),
-                    ClientInterceptor.class::cast);
+                        ClientInterceptor.class::cast);
             }
         };
         return new AnnotationGlobalClientInterceptorConfigurer(supplier);
@@ -139,7 +141,7 @@ public class GrpcClientAutoConfiguration {
      */
     @ConditionalOnMissingBean
     @Lazy
-    @Bean(destroyMethod="destroy")
+    @Bean(destroyMethod = "destroy")
     NameResolverRegistration grpcNameResolverRegistration(
             @Autowired(required = false) final List<NameResolverProvider> nameResolverProviders) {
         final NameResolverRegistration nameResolverRegistration = new NameResolverRegistration(nameResolverProviders);
@@ -178,10 +180,13 @@ public class GrpcClientAutoConfiguration {
 
         log.info("Detected grpc-netty-shaded: Creating ShadedNettyChannelFactory + InProcessChannelFactory");
         final ShadedNettyChannelFactory channelFactory =
-            new ShadedNettyChannelFactory(ConfigConverter.toSimples(properties), globalClientInterceptorRegistry, channelConfigurers);
+                new ShadedNettyChannelFactory(ConfigConverter.toSimples(properties), globalClientInterceptorRegistry,
+                        channelConfigurers);
         final InProcessChannelFactory inProcessChannelFactory =
-                new InProcessChannelFactory(ConfigConverter.toSimples(properties), globalClientInterceptorRegistry, channelConfigurers);
-        return new InProcessOrAlternativeChannelFactory(ConfigConverter.toSimples(properties), inProcessChannelFactory, channelFactory);
+                new InProcessChannelFactory(ConfigConverter.toSimples(properties), globalClientInterceptorRegistry,
+                        channelConfigurers);
+        return new InProcessOrAlternativeChannelFactory(ConfigConverter.toSimples(properties), inProcessChannelFactory,
+                channelFactory);
     }
 
     // Then try the normal netty channel factory
@@ -196,10 +201,13 @@ public class GrpcClientAutoConfiguration {
 
         log.info("Detected grpc-netty: Creating NettyChannelFactory + InProcessChannelFactory");
         final NettyChannelFactory channelFactory =
-                new NettyChannelFactory(ConfigConverter.toSimples(properties), globalClientInterceptorRegistry, channelConfigurers);
+                new NettyChannelFactory(ConfigConverter.toSimples(properties), globalClientInterceptorRegistry,
+                        channelConfigurers);
         final InProcessChannelFactory inProcessChannelFactory =
-                new InProcessChannelFactory(ConfigConverter.toSimples(properties), globalClientInterceptorRegistry, channelConfigurers);
-        return new InProcessOrAlternativeChannelFactory(ConfigConverter.toSimples(properties), inProcessChannelFactory, channelFactory);
+                new InProcessChannelFactory(ConfigConverter.toSimples(properties), globalClientInterceptorRegistry,
+                        channelConfigurers);
+        return new InProcessOrAlternativeChannelFactory(ConfigConverter.toSimples(properties), inProcessChannelFactory,
+                channelFactory);
     }
 
     // Finally try the in process channel factory
@@ -212,7 +220,8 @@ public class GrpcClientAutoConfiguration {
             final List<GrpcChannelConfigurer> channelConfigurers) {
 
         log.warn("Could not find a GrpcChannelFactory on the classpath: Creating InProcessChannelFactory as fallback");
-        return new InProcessChannelFactory(ConfigConverter.toSimples(properties), globalClientInterceptorRegistry, channelConfigurers);
+        return new InProcessChannelFactory(ConfigConverter.toSimples(properties), globalClientInterceptorRegistry,
+                channelConfigurers);
     }
 
 }

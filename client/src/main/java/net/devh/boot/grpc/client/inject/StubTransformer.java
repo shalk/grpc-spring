@@ -21,10 +21,10 @@ import io.grpc.stub.AbstractStub;
 import net.devh.boot.grpc.client.channelfactory.GrpcChannelFactory;
 
 /**
- * A stub transformer will be used by the {GrpcClientBeanPostProcessor} to configure the stubs before they are
- * assigned to their fields. Implementations should only call the {@code AbstractStub#with...} methods on the given
- * stubs and return that result. Implementations should not use this transformer to replace the stub with a unrelated
- * other instance.
+ * A stub transformer will be used by the {GrpcClientBeanPostProcessor} to configure the stubs before they are assigned
+ * to their fields. Implementations should only call the {@code AbstractStub#with...} methods on the given stubs and
+ * return that result. Implementations should not use this transformer to replace the stub with a unrelated other
+ * instance.
  *
  * <p>
  * <b>Note:</b> StubTransformer will only transform {@link AbstractStub}s and NOT {@link Channel}s. To configure

@@ -22,7 +22,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.io.IOException;
 import java.time.Duration;
 
-import net.devh.boot.grpc.client.config.ConfigConverter;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,6 +36,7 @@ import io.grpc.ConnectivityState;
 import io.grpc.ManagedChannel;
 import io.grpc.Server;
 import io.grpc.inprocess.InProcessServerBuilder;
+import net.devh.boot.grpc.client.config.ConfigConverter;
 import net.devh.boot.grpc.client.config.GrpcChannelProperties;
 import net.devh.boot.grpc.client.config.GrpcChannelsProperties;
 import net.devh.boot.grpc.client.interceptor.GlobalClientInterceptorRegistry;

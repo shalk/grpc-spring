@@ -16,6 +16,15 @@
 
 package net.devh.boot.grpc.server.config;
 
+import java.io.File;
+import java.io.InputStream;
+import java.security.KeyStore;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 import io.grpc.ServerBuilder;
 import io.grpc.internal.GrpcUtil;
 import io.grpc.netty.shaded.io.grpc.netty.GrpcSslContexts;
@@ -26,17 +35,6 @@ import net.devh.boot.grpc.common.security.KeyStoreUtils;
 import net.devh.boot.grpc.common.util.GrpcUtils;
 import net.devh.boot.grpc.common.util.SocketUtils;
 
-
-import java.io.File;
-import java.io.InputStream;
-import java.security.KeyStore;
-import java.time.Duration;
-import java.time.temporal.ChronoUnit;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import static net.devh.boot.grpc.common.security.KeyStoreUtils.FORMAT_AUTODETECT;
 
 /**
  * The properties for the gRPC server that will be started as part of the application.
