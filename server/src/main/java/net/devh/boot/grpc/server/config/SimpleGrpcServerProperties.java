@@ -21,7 +21,6 @@ import java.io.InputStream;
 import java.security.KeyStore;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -31,6 +30,7 @@ import io.grpc.netty.shaded.io.grpc.netty.GrpcSslContexts;
 import io.grpc.netty.shaded.io.grpc.netty.NettyServerBuilder;
 import io.grpc.netty.shaded.io.netty.handler.ssl.SslContextBuilder;
 import lombok.Data;
+import lombok.Setter;
 import net.devh.boot.grpc.common.security.KeyStoreUtils;
 import net.devh.boot.grpc.common.util.GrpcUtils;
 import net.devh.boot.grpc.common.util.SocketUtils;
@@ -374,11 +374,8 @@ public class SimpleGrpcServerProperties {
          * @param ciphers List of allowed ciphers
          * @return The cipher suite accepted for secure connections or null.
          */
+        @Setter
         private List<String> ciphers = null;
-
-        public void setCiphers(final String ciphers) {
-            this.ciphers = Arrays.asList(ciphers.split("[ :,]"));
-        }
 
         /**
          * Specifies the protocols accepted for secure connections. If {@code null} or empty it will use the system's
@@ -387,12 +384,8 @@ public class SimpleGrpcServerProperties {
          * @param protocols Protocol list consisting of one or more protocols separated by colons, commas or spaces.
          * @return The protocols accepted for secure connections or null.
          */
+        @Setter
         private String[] protocols = null;
-
-        public void setProtocols(final String protocols) {
-            this.protocols = protocols.split("[ :,]");
-        }
-
 
     }
 
